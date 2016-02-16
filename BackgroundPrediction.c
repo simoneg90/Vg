@@ -132,7 +132,7 @@ TCanvas* comparePlots2(RooPlot *plot_bC, RooPlot *plot_bS, TH1F *data, TH1F *qcd
 	return c;
 }
 
-void BackgroundPrediction()
+void BackgroundPrediction(std::string fname,int rebin_factor)
 {
 
 	gROOT->SetStyle("Plain");
@@ -154,10 +154,13 @@ void BackgroundPrediction()
 
 	double ratio_tau=-1, ratio_btag=-1;
 
-	TFile *f=new TFile("data_no_b_tag_tau21_SB50_70.root");
-	TH1F *h_mX_CR_tau=(TH1F*)f->Get("distribs_14_10_1");
+	TFile *f=new TFile(fname.c_str());
+	TH1F *h_mX_CR_tau=(TH1F*)f->Get("distribs_16_10_1");
+        h_mX_CR_tau->Rebin(rebin_factor);
 	TH1F *h_mX_CR_btag=(TH1F*)f->Get("distribs_16_10_0");
-	TH1F *h_mX_SR=(TH1F*)f->Get("distribs_14_10_0");
+        h_mX_CR_btag->Rebin(rebin_factor);
+        TH1F *h_mX_SR=(TH1F*)f->Get("distribs_16_10_0");
+        h_mX_SR->Rebin(rebin_factor);
 	ratio_tau=(h_mX_SR->GetSumOfWeights()/(h_mX_CR_tau->GetSumOfWeights()));
 	ratio_btag= h_mX_SR->GetSumOfWeights()/(h_mX_CR_btag->GetSumOfWeights());
 	double nEventsSR = h_mX_SR->GetSumOfWeights();
@@ -263,7 +266,7 @@ void BackgroundPrediction()
 	int nbins = (int) (SR_hi- SR_lo)/rebin;
 	x.setBins(nbins);
 
-	std::cout << "chi2(data) " <<  aC_plot.chiSquare()<<std::endl;
+	std::cout << "chi2(data) " <<  aC_plot->chiSquare()<<std::endl;
 
 	//std::cout << "p-value: data     under hypothesis H0:  " << TMath::Prob(chi2_data->getVal(), nbins - 1) << std::endl;
 

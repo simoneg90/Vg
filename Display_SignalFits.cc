@@ -158,10 +158,12 @@ double lnN(double b, double a, double c)
 	return err;
 }
 
-int Display_SignalFits(std::string dir_preselection="",
-		std::string dir_selection="",
-		std::string file_histograms="m-",
-		bool focus=false)
+int Display_SignalFits(std::string postfix,
+                       std::string dir_preselection="",
+                       std::string dir_selection="",
+                       std::string file_histograms="m-",
+                       int rebin_factor,
+                       bool focus=false)
 {
 
 	std::vector<std::string> masses;
@@ -219,8 +221,9 @@ int Display_SignalFits(std::string dir_preselection="",
 	{
 		v_zero.push_back(0);
 
-		TFile *file=new TFile((dir_preselection+"/"+dir_selection+"/"+file_histograms+masses.at(i)+"_no_b_tag_tau21_SB60_70.root").c_str());
-		TH1F *h_mX_SR=(TH1F*)file->Get("distribs_14_10_0");
+		TFile *file=new TFile((dir_preselection+"/"+dir_selection+"/"+file_histograms+postfix).c_str());
+		TH1F *h_mX_SR=(TH1F*)file->Get("distribs_0_10_0");
+                h_mX_SR->Rebin(rebin_factor);
 
 		double nSignal_init=36500;//h_Count->GetBinContent(1);
 
