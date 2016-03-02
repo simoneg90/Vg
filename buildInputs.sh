@@ -11,9 +11,9 @@ for name in ${postfix[@]}
 do
     echo $name
     echo
-    echo "root -x -b -l -q Display_SignalFits.cc\(\"${name}\"\,\"\",\"\",\"signal\",${mass},${rebin}\) > signal${mass}_${name}_sig.log"
+    echo "root -x -b -l -q Display_SignalFits.cc\(\"${name}\"\,\"../fitFilesBtagSF/\",\"\",\"histos_signal-\",${mass},${rebin}\) > signal${mass}_${name}_sig.log"
     echo
-    root -x -b -l -q Display_SignalFits.cc\(\"${name}\"\,\"\",\"\",\"signal\",${mass},${rebin}\) > signal${mass}_${name}_sig.log
+    root -x -b -l -q Display_SignalFits.cc\(\"${name}\"\,\"../fitFilesBtagSF/\",\"\",\"histos_signal-\",${mass},${rebin}\) > signal${mass}_${name}_sig.log
     echo
     echo "root -x -b -l -q BackgroundPrediction.c\(\"${name}\",${rebin}\) > data_${name}_bkg.log"
     echo

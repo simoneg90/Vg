@@ -25,6 +25,8 @@
 #include <fstream>
 #include <algorithm>
 #include "CMS_lumi.C"
+#include "tdrstyle.C"
+
 //#include "RooRealVar.h"
 //#include "RooArgList.h"
 //#include "RooChebychev.h"
@@ -76,7 +78,7 @@ struct Params
 RooPlot* fitSignal(TH1F *h, std::string mass, int color, TLegend *leg, Params &params, std::string postfix, bool kinFit=false)
 {
   
-  RooRealVar *x, *sg_p0, *sg_p1, *sg_p2, *sg_p3, *sg_p4;
+  RooRealVar *x, *sg_p0, *sg_p1, *sg_p2, *sg_p3, *sg_p4, *sg_p5, *sg_p6;
   x=new RooRealVar("x", "m_{X} (GeV)", 600., 3200.);
   double rangeLo=-1, rangeHi=-1;
 
@@ -186,13 +188,15 @@ double lnN(double b, double a, double c)
 }
 
 int Display_SignalFits(std::string postfix,
-		std::string dir_preselection="",
+		std::string dir_preselection="../fitFilesBtagSF",
 		std::string dir_selection="",
-		std::string file_histograms="m-",
+		std::string file_histograms="histos_signal-",
 		int imass=750,
-		int rebin_factor,
+		int rebin_factor = 10,
 		bool focus=false)
 {
+
+    rebin = rebin_factor;
 
 	std::vector<std::string> masses;
 	std::cout<<" starting with "<<imass<<std::endl;	
@@ -200,14 +204,16 @@ int Display_SignalFits(std::string postfix,
 	iimass << imass;
 	masses.push_back(iimass.str());
 
-	std::string file_postfix = postfix + std::string(".root");
+	std::string file_postfix = std::string(".root");
 	std::cout<< " file input "<< file_postfix<<std::endl;
 
-	gROOT->SetStyle("Plain");
+	//gROOT->SetStyle("Plain");
 	gStyle->SetOptStat(000000000);
 	gStyle->SetPadGridX(0);
 	gStyle->SetPadGridY(0);
 	gStyle->SetOptStat(0000);
+    setTDRStyle();
+
 	/*gROOT->LoadMacro("CMS_lumi.C");
 
 	  writeExtraText = true;       // if extra text
@@ -216,7 +222,7 @@ int Display_SignalFits(std::string postfix,
 	  lumi_7TeV  = "4.9 fb^{-1}";  // default is "5.1 fb^{-1}"	
 	  */
 	// Calculate nSignal events given production cross section, branching fractions and efficiency
-	double totalLumi=2630; // /pb
+	double totalLumi=2690; // /pb
 	double prodXsec_1=1.; // pb
 
 	// Interpolation Plots
@@ -256,11 +262,11 @@ int Display_SignalFits(std::string postfix,
 		if(masses.at(i) =="1000") index_distr ="1";
 		if(masses.at(i) =="2000") index_distr ="2";
 		if(masses.at(i) =="3000") index_distr ="3";
-		std::cout<<" OPENING FILE: " << (dir_preselection+"/"+dir_selection+"/"+file_histograms+masses.at(i)+"_"+file_postfix).c_str() <<std::endl; 	
-		TFile *file=new TFile((dir_preselection+"/"+dir_selection+"/"+file_histograms+masses.at(i)+"_"+file_postfix).c_str());
+		std::cout<<" OPENING FILE: " << (dir_preselection+"/"+postfix+"/"+file_histograms+masses.at(i)+file_postfix).c_str() <<std::endl;
+		TFile *file=new TFile((dir_preselection+"/"+postfix+"/"+file_histograms+masses.at(i)+file_postfix).c_str());
 		TH1F *h_mX_SR=(TH1F*)file->Get(("distribs_"+index_distr+"_10_0").c_str());
 		std::cout<< ("distribs_"+index_distr+"_10_0").c_str()<<std::endl;
-		h_mX_SR->Rebin(rebin_factor);
+		//h_mX_SR->Rebin(rebin_factor);
 
 		double nSignal_init=1.0;//36500;//h_Count->GetBinContent(1);
 
