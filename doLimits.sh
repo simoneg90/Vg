@@ -1,28 +1,42 @@
 #!/bin/bash
 
 function show_help { 
-    echo "./doLimits.sh [-c to clean up]" 
+    echo "./doLimits.sh [-c to clean up] -r [rebin] [-d debug combine]" 
 }
 
+masses=(
+    750 1000 2000 3000
+)
 cleanUp=0
+rebin=5
+debug=0
 
-while getopts "h?c" opt; do
+while getopts "h?cr:d" opt; do
     case "$opt" in
     h|\?)
         show_help
         exit 0
+        ;;
+    r)
+        rebin=$OPTARG
+        ;;
+    d) 
+        debug=1
         ;;
     c)  cleanUp=1
         ;;
     esac
 done
 
-if [ $cleanUp -eq 0 ]; then
-    ./buildInputs.sh
-    ./buildDatacards.sh
-    ./runLimits.sh
-fi
-
-if [ $cleanUp -eq 1 ]; then
-    ./cleanUp.sh
-fi
+for m in ${masses[@]}
+do
+    if [ $cleanUp -eq 0 ]; then
+        ./buildInputs.sh $rebin $m
+        ./buildDatacards.sh $m
+        #./runLimits.sh $debug $m
+    fi
+    
+    if [ $cleanUp -eq 1 ]; then
+        ./cleanUp.sh $m
+    fi
+done
