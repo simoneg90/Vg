@@ -26,6 +26,7 @@ CMS_lumi( TPad* pad, int iPeriod, int iPosX )
   float t = pad->GetTopMargin();
   float r = pad->GetRightMargin();
   float b = pad->GetBottomMargin();
+  //  float e = 0.025;
 
   pad->cd();
 
@@ -160,4 +161,3 @@ CMS_lumi( TPad* pad, int iPeriod, int iPosX )
     }
   return;
 }
-
