@@ -27,7 +27,7 @@ bool useRatioFit=false;
 std::string tags="nominal"; // MMMM
 
 double SR_lo=600.; 
-double SR_hi=2500.;
+double SR_hi=3500.;
 
 Double_t ErfExp(Double_t x, Double_t c, Double_t offset, Double_t width){
 	if(width<1e-2)width=1e-2;
@@ -132,8 +132,9 @@ TCanvas* comparePlots2(RooPlot *plot_bC, RooPlot *plot_bS, TH1F *data, TH1F *qcd
 	return c;
 }
 
-void BackgroundPrediction(std::string fname,int rebin_factor)
+void BackgroundPrediction(std::string pname,int rebin_factor)
 {
+        std::string fname = std::string("data_") + pname + std::string(".root");
 
 	gROOT->SetStyle("Plain");
 	gStyle->SetOptStat(000000000);
@@ -155,15 +156,17 @@ void BackgroundPrediction(std::string fname,int rebin_factor)
 	double ratio_tau=-1, ratio_btag=-1;
 
 	TFile *f=new TFile(fname.c_str());
-	TH1F *h_mX_CR_tau=(TH1F*)f->Get("distribs_16_10_1");
+	TH1F *h_mX_CR_tau=(TH1F*)f->Get("distribs_18_10_1")->Clone("CR_tau");
         h_mX_CR_tau->Rebin(rebin_factor);
-	TH1F *h_mX_CR_btag=(TH1F*)f->Get("distribs_16_10_0");
+	TH1F *h_mX_CR_btag=(TH1F*)f->Get("distribs_18_10_0")->Clone("CR_btag");
         h_mX_CR_btag->Rebin(rebin_factor);
-        TH1F *h_mX_SR=(TH1F*)f->Get("distribs_16_10_0");
+        TH1F *h_mX_SR=(TH1F*)f->Get("distribs_18_10_0")->Clone("The_SR");
+	double nEventsSR = h_mX_SR->Integral(600,4000);
         h_mX_SR->Rebin(rebin_factor);
 	ratio_tau=(h_mX_SR->GetSumOfWeights()/(h_mX_CR_tau->GetSumOfWeights()));
 	ratio_btag= h_mX_SR->GetSumOfWeights()/(h_mX_CR_btag->GetSumOfWeights());
-	double nEventsSR = h_mX_SR->GetSumOfWeights();
+	//double nEventsSR = h_mX_SR->Integral(600,4000);
+	
 
 
 	std::cout<<"ratio btag = "<<ratio_btag<<"ratio tau "<<ratio_tau<<std::endl;
@@ -193,10 +196,10 @@ void BackgroundPrediction(std::string fname,int rebin_factor)
 	    string name_output="CR_RooFit_GaussExp";
 	    */
 
-	RooRealVar bg_p0("bg_p0", "bg_p0", 0., 100.);
-	RooRealVar bg_p1("bg_p1", "bg_p1", 0., 15.1);
-	RooRealVar bg_p2("bg_p2", "bg_p2", 0., 5.1);	
-	bg = RooGenericPdf("bg","(pow(1-@0/13000,@1)/pow(@0/13000,@2+@3*log(@0/13000)))",RooArgList(x,bg_p0,bg_p1,bg_p2));
+	RooRealVar bg_p0((std::string("bg_p0_")+pname).c_str(), "bg_p0", 0., 200.);
+	RooRealVar bg_p1((std::string("bg_p1_")+pname).c_str(), "bg_p1", 0., 30.1);
+	RooRealVar bg_p2((std::string("bg_p2_")+pname).c_str(), "bg_p2", 0., 10.1);	
+	bg = RooGenericPdf((std::string("bg_")+pname).c_str(),"(pow(1-@0/13000,@1)/pow(@0/13000,@2+@3*log(@0/13000)))",RooArgList(x,bg_p0,bg_p1,bg_p2));
 	string name_output = "CR_RooFit_Exp";	
 
 	/* TO FIX
@@ -229,9 +232,9 @@ void BackgroundPrediction(std::string fname,int rebin_factor)
 	RooFitResult *r_bg=bg.fitTo(pred, RooFit::Range(SR_lo, SR_hi), RooFit::Save());
 	//RooDataHist  data_=*(bg.generateBinned(x, h_mMMMMa_3Tag_SR_Prediction->Integral(h_mMMMMa_3Tag_SR_Prediction->FindBin(SR_lo), h_mX_SR->FindBin(SR_hi)-1) , RooAbsData::Poisson));
 	std::cout<<" --------------------- Building Envelope --------------------- "<<std::endl;
-	std::cout<< "bg_p0   param   "<<bg_p0.getVal() <<  " "<<bg_p0.getError()<<std::endl;
-	std::cout<< "bg_p1   param   "<<bg_p1.getVal() <<  " "<<bg_p1.getError()<<std::endl;
-	std::cout<< "bg_p2   param   "<<bg_p2.getVal() <<  " "<<bg_p2.getError()<<std::endl;
+	std::cout<< "bg_p0_"<< pname << "   param   "<<bg_p0.getVal() <<  " "<<bg_p0.getError()<<std::endl;
+	std::cout<< "bg_p1_"<< pname << "   param   "<<bg_p1.getVal() <<  " "<<bg_p1.getError()<<std::endl;
+	std::cout<< "bg_p2_"<< pname << "   param   "<<bg_p2.getVal() <<  " "<<bg_p2.getError()<<std::endl;
 
 	RooPlot *aC_plot=x.frame();
 	pred.plotOn(aC_plot, RooFit::MarkerColor(kPink+2));
