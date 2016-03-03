@@ -353,9 +353,11 @@ void BackgroundPrediction(std::string pname,int rebin_factor)
 	c_rooFit->SaveAs((name_output+"_log.pdf").c_str());
 
 	// ------------------------------------------
+	RooRealVar nBackground((std::string("bg_norm_")+pname).c_str(),"nbkg",h_mX_SR->GetSumOfWeights());	
 
 	RooWorkspace *w=new RooWorkspace("Vg");
 	w->import(bg);
+	w->import(nBackground);
 	w->SaveAs("w_background_GaussExp.root");
 
 	TH1F *h_mX_SR_fakeData=(TH1F*)h_mX_SR->Clone("h_mX_SR_fakeData");
