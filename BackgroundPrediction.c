@@ -26,8 +26,8 @@ bool useRatioFit=false;
 
 std::string tags="nominal"; // MMMM
 
-double SR_lo=600.; 
-double SR_hi=3500.;
+double SR_lo=650.; 
+double SR_hi=2500.;
 
 Double_t ErfExp(Double_t x, Double_t c, Double_t offset, Double_t width){
 	if(width<1e-2)width=1e-2;
@@ -149,7 +149,7 @@ void BackgroundPrediction(std::string pname,int rebin_factor)
 
 	writeExtraText = true;       // if extra text
 	extraText  = "Preliminary";  // default extra text is "Preliminary"
-	lumi_13TeV  = "2.6 fb^{-1}"; // default is "19.7 fb^{-1}"
+	lumi_13TeV  = "2.7 fb^{-1}"; // default is "19.7 fb^{-1}"
 	lumi_7TeV  = "4.9 fb^{-1}";  // default is "5.1 fb^{-1}"
 
 
@@ -158,7 +158,7 @@ void BackgroundPrediction(std::string pname,int rebin_factor)
 	TFile *f=new TFile(fname.c_str());
 	TH1F *h_mX_CR_tau=(TH1F*)f->Get("distribs_18_10_1")->Clone("CR_tau");
         h_mX_CR_tau->Rebin(rebin_factor);
-	TH1F *h_mX_CR_btag=(TH1F*)f->Get("distribs_18_10_0")->Clone("CR_btag");
+	TH1F *h_mX_CR_btag=(TH1F*)f->Get("distribs_18_10_1")->Clone("CR_btag");
         h_mX_CR_btag->Rebin(rebin_factor);
         TH1F *h_mX_SR=(TH1F*)f->Get("distribs_18_10_0")->Clone("The_SR");
 	double nEventsSR = h_mX_SR->Integral(600,4000);
@@ -173,7 +173,7 @@ void BackgroundPrediction(std::string pname,int rebin_factor)
 
 
 
-
+	rebin= rebin_factor;
 	h_mX_CR_tau->Rebin(rebin);
 	h_mX_CR_tau->SetLineColor(kBlack);
 	if(blind)TH1F *h_SR_Prediction=(TH1F*)h_mX_CR_tau->Clone("h_SR_Prediction");
@@ -241,30 +241,30 @@ void BackgroundPrediction(std::string pname,int rebin_factor)
 	bg.plotOn(aC_plot, RooFit::VisualizeError(*r_bg, 1), RooFit::FillColor(kGray+1), RooFit::FillStyle(3001));
 	bg.plotOn(aC_plot, RooFit::LineColor(kBlack));
 	pred.plotOn(aC_plot, RooFit::LineColor(kBlack), RooFit::MarkerColor(kBlack));
-	TCanvas *c_rooFit=new TCanvas("c_rooFit", "c_rooFit", 700, 700);
-	c_rooFit->SetFillStyle(4000);
-	c_rooFit->SetFrameFillColor(0);
 
 	double xPad = 0.3;
-	TCanvas *c_rooFit=new TCanvas("c_rooFit", "c_rooFit", 700*(1.-xPad), 700);
-	c_rooFit->SetFillStyle(4000);
-	c_rooFit->SetFrameFillColor(0);
+        TCanvas *c_rooFit=new TCanvas("c_rooFit", "c_rooFit", 800*(1.-xPad), 600);
+        c_rooFit->SetFillStyle(4000);
+        c_rooFit->SetFrameFillColor(0);
 
-	TPad *p_1=new TPad("p_1", "p_1", 0, xPad, 1, 1);
-	p_1->SetFillStyle(4000);
-	p_1->SetFrameFillColor(0);
-	TPad* p_2 = new TPad("p_2", "p_2",0,0,1,xPad);
-	p_2->SetBottomMargin((1.-xPad)/xPad*0.13);
-	p_2->SetTopMargin(0.06);
-	p_2->SetFillColor(0);
-	p_2->SetBorderMode(0);
-	p_2->SetBorderSize(2);
-	p_2->SetFrameBorderMode(0);
-	p_2->SetFrameBorderMode(0);
+        TPad *p_1=new TPad("p_1", "p_1", 0, xPad, 1, 1);
+        p_1->SetFillStyle(4000);
+        p_1->SetFrameFillColor(0);
+        p_1->SetBottomMargin(0.02);
 
-	p_1->Draw();
-	p_2->Draw();
-	p_1->cd();
+        TPad* p_2 = new TPad("p_2", "p_2",0,0,1,xPad);
+        p_2->SetBottomMargin((1.-xPad)/xPad*0.13);
+        p_2->SetTopMargin(0.03);
+        p_2->SetFillColor(0);
+        p_2->SetBorderMode(0);
+        p_2->SetBorderSize(2);
+        p_2->SetFrameBorderMode(0);
+        p_2->SetFrameBorderMode(0);
+
+        p_1->Draw();
+        p_2->Draw();
+        p_1->cd();
+
 
 	int nbins = (int) (SR_hi- SR_lo)/rebin;
 	x.setBins(nbins);
@@ -275,46 +275,46 @@ void BackgroundPrediction(std::string pname,int rebin_factor)
 
 
 	aC_plot->GetXaxis()->SetRangeUser(SR_lo, SR_hi);
-	aC_plot->GetYaxis()->SetRangeUser(1, 500.);
-	h_SR_Prediction->GetXaxis()->SetRangeUser(SR_lo, SR_hi);
-	string rebin_ = itoa(rebin);
+        aC_plot->GetXaxis()->SetLabelOffset(0.03);
+        aC_plot->GetYaxis()->SetRangeUser(1, 500.);
+        h_SR_Prediction->GetXaxis()->SetRangeUser(SR_lo, SR_hi);
+        string rebin_ = itoa(rebin);
 
-	aC_plot->GetXaxis()->SetTitle("m_{X} (GeV) ");  aC_plot->GetYaxis()->SetTitle(("Events / "+rebin_+" GeV ").c_str());    
-	aC_plot->SetMarkerSize(0.7);
-	aC_plot->GetYaxis()->SetLabelSize(0.03);	
-	aC_plot->GetYaxis()->SetTitleOffset(1.0);
+        aC_plot->GetXaxis()->SetTitle("m_{X} (GeV) ");  aC_plot->GetYaxis()->SetTitle(("Events / "+rebin_+" GeV ").c_str());
+        aC_plot->SetMarkerSize(0.7);
+
+
 	aC_plot->Draw();
 
 
 
-	aC_plot->SetTitle();
-	TPaveText *pave = new TPaveText(0.85625,0.7,0.67,0.8,"NDC");
-	//TLegend *leg = new TLegend(0.85625,0.7721654,0.6765625,0.8903839,NULL,"brNDC");`
-	pave->SetBorderSize(0);
-	pave->SetTextSize(0.03);
-	pave->SetLineColor(1);
-	pave->SetLineStyle(1);
-	pave->SetLineWidth(2);
-	pave->SetFillColor(0);
-	pave->SetFillStyle(0);
-	char name[1000];
-	sprintf(name,"#chi^{2}/n = %.2f",aC_plot->chiSquare());
-	pave->AddText(name);
-	pave->Draw(); 
 
-	TLegend *leg = new TLegend(0.85625,0.7721654,0.6765625,0.8903839,NULL,"brNDC");
-	leg->SetBorderSize(0);
-	leg->SetTextSize(0.035);
-	leg->SetLineColor(1);
-	leg->SetLineStyle(1);
-	leg->SetLineWidth(2);
-	leg->SetFillColor(0);
-	leg->SetFillStyle(0);
-	h_SR_Prediction->SetMarkerColor(kBlack);
-	h_SR_Prediction->SetLineColor(kBlack);
-	h_SR_Prediction->SetMarkerStyle(20);
-	//h_mMMMMa_3Tag_SR->GetXaxis()->SetTitleSize(0.09);
-	leg->AddEntry(h_SR_Prediction, "Data", "lep");
+        aC_plot->SetTitle("");
+        TPaveText *pave = new TPaveText(0.85625,0.7,0.67,0.8,"NDC");
+        pave->SetBorderSize(0);
+        pave->SetTextSize(0.03);
+        pave->SetLineColor(1);
+        pave->SetLineStyle(1);
+        pave->SetLineWidth(2);
+        pave->SetFillColor(0);
+        pave->SetFillStyle(0);
+        char name[1000];
+        sprintf(name,"#chi^{2}/n = %.2f",aC_plot->chiSquare());
+        pave->AddText(name);
+        pave->Draw();
+
+        TLegend *leg = new TLegend(0.85625,0.7721654,0.6765625,0.8903839,NULL,"brNDC");
+        leg->SetBorderSize(0);
+        leg->SetTextSize(0.035);
+        leg->SetLineColor(1);
+        leg->SetLineStyle(1);
+        leg->SetLineWidth(2);
+        leg->SetFillColor(0);
+        leg->SetFillStyle(0);
+        h_SR_Prediction->SetMarkerColor(kBlack);
+        h_SR_Prediction->SetLineColor(kBlack);
+        h_SR_Prediction->SetMarkerStyle(20);
+	   leg->AddEntry(h_SR_Prediction, "Data", "lep");
         TH1F *h=new TH1F();
         h->SetLineColor(kRed);
         h->SetLineWidth(3);
@@ -327,18 +327,20 @@ void BackgroundPrediction(std::string pname,int rebin_factor)
         hpull = aC_plot->pullHist();
         hpull->GetXaxis()->SetRangeUser(SR_lo, SR_hi);
         RooPlot* frameP = x.frame() ;
-        frameP->SetTitle("");frameP->GetYaxis()->SetTitle("Pull");frameP->GetXaxis()->SetRangeUser(SR_lo, SR_hi);
 
         frameP->addPlotable(hpull,"P");
-        frameP->GetYaxis()->SetTitle("Pull");
+    	frameP->GetYaxis()->SetRangeUser(-5,5);
+    	frameP->GetXaxis()->SetRangeUser(SR_lo, SR_hi);
+    	frameP->SetTitle("");
+    	frameP->GetYaxis()->SetTitle("Pull");
 
-	frameP->GetXaxis()->SetTitleOffset(1.2);
-	frameP->GetXaxis()->SetLabelSize((1.-xPad)/xPad*0.03);
-	frameP->GetYaxis()->SetLabelSize((1.-xPad)/xPad*0.05);
-	frameP->GetYaxis()->SetTitleSize((1.-xPad)/xPad*0.04);
-	frameP->GetXaxis()->SetTitleSize((1.-xPad)/xPad*0.05);
-	frameP->GetYaxis()->SetLabelSize((1.-xPad)/xPad*0.03);
-	frameP->GetYaxis()->SetTitleOffset(1./((1.-xPad)/xPad));
+    	frameP->GetYaxis()->SetTitleSize((1.-xPad)/xPad*0.06);
+    	frameP->GetYaxis()->SetTitleOffset(1.2/((1.-xPad)/xPad));
+    	frameP->GetXaxis()->SetTitleSize((1.-xPad)/xPad*0.06);
+        frameP->GetXaxis()->SetLabelSize((1.-xPad)/xPad*0.05);
+        frameP->GetYaxis()->SetLabelSize((1.-xPad)/xPad*0.05);
+        frameP->Draw();
+
 
 
 	frameP->Draw();

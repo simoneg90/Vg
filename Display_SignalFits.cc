@@ -216,7 +216,7 @@ int Display_SignalFits(std::string postfix,
 	  lumi_7TeV  = "4.9 fb^{-1}";  // default is "5.1 fb^{-1}"	
 	  */
 	// Calculate nSignal events given production cross section, branching fractions and efficiency
-	double totalLumi=2630; // /pb
+	double totalLumi=2690; // /pb
 	double prodXsec_1=1.; // pb
 
 	// Interpolation Plots

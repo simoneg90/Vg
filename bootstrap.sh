@@ -1,6 +1,6 @@
 #!/bin/bash
 pushd ../
-git clone git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit -b v5.0.1
+git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit -b v5.0.1
 pushd HiggsAnalysis/CombinedLimit 
 git remote add musella https://github.com/musella/HiggsAnalysis-CombinedLimit.git
 git fetch musella slc6-root5.34.17:slc6-root5.34.17
