@@ -353,7 +353,7 @@ void BackgroundPrediction(std::string pname,int rebin_factor)
 	c_rooFit->SaveAs((name_output+"_log.pdf").c_str());
 
 	// ------------------------------------------
-	RooRealVar nBackground((std::string("bg_norm_")+pname).c_str(),"nbkg",h_mX_SR->GetSumOfWeights());	
+	RooRealVar nBackground((std::string("bg_")+pname+std::string("_norm")).c_str(),"nbkg",h_mX_SR->GetSumOfWeights());	
 
 	RooWorkspace *w=new RooWorkspace("Vg");
 	w->import(bg);
