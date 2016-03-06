@@ -151,7 +151,6 @@ void BackgroundPrediction(std::string pname,int rebin_factor)
 {
     rebin = rebin_factor;
     std::string fname = std::string("../fitFilesBtagSF/") + pname + std::string("/histos_bkg.root");
-    //std::string fname = std::string("../fitFilesAll/") + pname + std::string("/histos_bkg.root");
     
     gStyle->SetOptStat(000000000);
     gStyle->SetPadGridX(0);
@@ -196,7 +195,6 @@ void BackgroundPrediction(std::string pname,int rebin_factor)
     
     
     RooRealVar x("x", "m_{X} (GeV)", SR_lo, SR_hi);
-    //RooRealVar x("x", "m_{X} (GeV)", SR_lo, 2000);
     
     /*  RooRealVar bg_p0("bg_p0", "bg_p0", 700., 1200.);
 	    RooRealVar bg_p1("bg_p1", "bg_p1", 50., 300.1);
@@ -205,7 +203,7 @@ void BackgroundPrediction(std::string pname,int rebin_factor)
 	    string name_output="CR_RooFit_GaussExp";
 	    */
     
-    RooRealVar bg_p0((std::string("bg_p0_")+pname).c_str(), "bg_p0", 2.5, 0., 30);
+    RooRealVar bg_p0((std::string("bg_p0_")+pname).c_str(), "bg_p0", 2.5, 0., 200);
     RooRealVar bg_p1((std::string("bg_p1_")+pname).c_str(), "bg_p1", 4.7, 0., 50);
     RooRealVar bg_p2((std::string("bg_p2_")+pname).c_str(), "bg_p2", 0.004,0., 10.1);
     RooGenericPdf bg = RooGenericPdf((std::string("bg_")+pname).c_str(),"(pow(1-@0/13000,@1)/pow(@0/13000,@2+@3*log(@0/13000)))",RooArgList(x,bg_p0,bg_p1,bg_p2));
@@ -299,10 +297,11 @@ void BackgroundPrediction(std::string pname,int rebin_factor)
     
     
     aC_plot->SetTitle("");
-    TPaveText *pave = new TPaveText(0.85625,0.7,0.67,0.8,"NDC");
+    TPaveText *pave = new TPaveText(0.85,0.7,0.67,0.8,"NDC");
     //TLegend *leg = new TLegend(0.85625,0.7721654,0.6765625,0.8903839,NULL,"brNDC");`
     pave->SetBorderSize(0);
-    pave->SetTextSize(0.03);
+    pave->SetTextSize(0.05);
+    pave->SetTextFont(42);
     pave->SetLineColor(1);
     pave->SetLineStyle(1);
     pave->SetLineWidth(2);
@@ -313,9 +312,9 @@ void BackgroundPrediction(std::string pname,int rebin_factor)
     pave->AddText(name);
     pave->Draw();
     
-    TLegend *leg = new TLegend(0.85625,0.7721654,0.6765625,0.8903839,NULL,"brNDC");
+    TLegend *leg = new TLegend(0.85,0.75,0.65,0.90,NULL,"brNDC");
     leg->SetBorderSize(0);
-    leg->SetTextSize(0.04);
+    leg->SetTextSize(0.05);
     leg->SetTextFont(42);
     leg->SetLineColor(1);
     leg->SetLineStyle(1);
@@ -364,9 +363,11 @@ void BackgroundPrediction(std::string pname,int rebin_factor)
     c_rooFit->SaveAs((name_output+"_log.pdf").c_str());
     
     // ------------------------------------------
+    RooRealVar nBackground((std::string("bg_")+pname+std::string("_norm")).c_str(),"nbkg",h_mX_SR->GetSumOfWeights());
     
     RooWorkspace *w=new RooWorkspace("Vg");
     w->import(bg);
+    w->import(nBackground);
     w->SaveAs("w_background_GaussExp.root");
     
     TH1F *h_mX_SR_fakeData=(TH1F*)h_mX_SR->Clone("h_mX_SR_fakeData");

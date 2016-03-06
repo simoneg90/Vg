@@ -84,8 +84,7 @@ RooPlot* fitSignal(TH1F *h, std::string mass, int color, TLegend *leg, Params &p
     
     if (mass=="750")
     {
-        //rangeLo=600., rangeHi=3400.;
-        rangeLo=700., rangeHi=900.;
+        rangeLo=600., rangeHi=1100.;
         sg_p0=new RooRealVar((std::string("sg_p0")+postfix).c_str(), "sg_p0", 750, 700., 800.);
         sg_p1=new RooRealVar((std::string("sg_p1")+postfix).c_str(), "sg_p1", 27, 5., 40.);
         sg_p2=new RooRealVar((std::string("sg_p2")+postfix).c_str(), "sg_p2", 1.3, 0., 200.);
@@ -94,15 +93,6 @@ RooPlot* fitSignal(TH1F *h, std::string mass, int color, TLegend *leg, Params &p
         sg_p5=new RooRealVar((std::string("sg_p5")+postfix).c_str(), "sg_p5", 10, 0., 3000.);
         sg_p6=new RooRealVar((std::string("sg_p6")+postfix).c_str(), "sg_p6", 1, 0.,10.);
 
-        /*sg_p0=new RooRealVar((std::string("sg_p0")+postfix).c_str(), "sg_p0", 750, 700., 800.);
-        sg_p1=new RooRealVar((std::string("sg_p1")+postfix).c_str(), "sg_p1", 27, 5., 100.);
-        sg_p2=new RooRealVar((std::string("sg_p2")+postfix).c_str(), "sg_p2", -1.3, -200., 200.);
-        sg_p3=new RooRealVar((std::string("sg_p3")+postfix).c_str(), "sg_p3", 15, -300., 300.);
-        sg_p4=new RooRealVar((std::string("sg_p4")+postfix).c_str(), "sg_p4", 750, 500., 800.);
-        sg_p5=new RooRealVar((std::string("sg_p5")+postfix).c_str(), "sg_p5", 10, 0., 3000.);
-        sg_p6=new RooRealVar((std::string("sg_p6")+postfix).c_str(), "sg_p6", 1, 0.,10.);
-        sg_p7=new RooRealVar((std::string("sg_p7")+postfix).c_str(), "sg_p7", 1.5, -300., 300.);
-        sg_p8=new RooRealVar((std::string("sg_p8")+postfix).c_str(), "sg_p8", 15, -1000, 1000.);*/
     }
     else if  (mass=="1000")
     {
@@ -164,7 +154,6 @@ RooPlot* fitSignal(TH1F *h, std::string mass, int color, TLegend *leg, Params &p
         signalHistogram.plotOn(plot, RooFit::MarkerColor(color));
         signal.plotOn(plot, RooFit::LineColor(color), RooFit::LineWidth(0));
     }
-    //leg->AddEntry(&signalCore, "CB fit", "l");
     leg->AddEntry((TObject*)0, ("#mu_{CB}= "+tostr(sg_p0->getVal(),4)+" #pm "+tostr(sg_p0->getError(),1)+" GeV").c_str(), "");
     leg->AddEntry((TObject*)0, ("#sigma_{CB}= "+tostr(sg_p1->getVal(),2)+" #pm "+tostr(sg_p1->getError(),1)+" GeV").c_str(), "");
     
@@ -313,6 +302,7 @@ int Display_SignalFits(std::string postfix,
         TLegend *leg = new TLegend(0.75,0.75,0.6,0.9,NULL,"brNDC");
         leg->SetBorderSize(0);
         leg->SetTextSize(0.035);
+        leg->SetTextFont(42);
         leg->SetLineColor(1);
         leg->SetLineStyle(1);
         leg->SetLineWidth(2);
@@ -349,7 +339,7 @@ int Display_SignalFits(std::string postfix,
         
         plot_vg->SetTitle("");
         plot_vg->GetYaxis()->SetRangeUser(0.01, 100);
-        plot_vg->GetXaxis()->SetRangeUser(imass-100, imass+100);
+        plot_vg->GetXaxis()->SetRangeUser(imass-200, imass+200);
         //plot_vg->GetXaxis()->SetRangeUser(rangeLoLocal, rangeHiLocal);
         plot_vg->GetXaxis()->SetLabelOffset(0.03);
         plot_vg->GetXaxis()->SetNdivisions(505);
@@ -375,7 +365,7 @@ int Display_SignalFits(std::string postfix,
 
         RooPlot* frameP = x->frame() ;
         frameP->SetTitle("");
-        frameP->GetXaxis()->SetRangeUser(imass-100, imass+100);
+        frameP->GetXaxis()->SetRangeUser(imass-200, imass+200);
         //frameP->GetXaxis()->SetRangeUser(rangeLoLocal, rangeHiLocal);
 
         frameP->addPlotable(hpull,"P");
