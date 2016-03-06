@@ -154,8 +154,8 @@ RooPlot* fitSignal(TH1F *h, std::string mass, int color, TLegend *leg, Params &p
         signalHistogram.plotOn(plot, RooFit::MarkerColor(color));
         signal.plotOn(plot, RooFit::LineColor(color), RooFit::LineWidth(0));
     }
-    leg->AddEntry((TObject*)0, ("#mu_{CB}= "+tostr(sg_p0->getVal(),4)+" #pm "+tostr(sg_p0->getError(),1)+" GeV").c_str(), "");
-    leg->AddEntry((TObject*)0, ("#sigma_{CB}= "+tostr(sg_p1->getVal(),2)+" #pm "+tostr(sg_p1->getError(),1)+" GeV").c_str(), "");
+    leg->AddEntry((TObject*)0, ("#mu_{CB}= "+tostr(sg_p0->getVal(),4)+" #pm "+tostr(sg_p0->getError(),2)+" GeV").c_str(), "");
+    leg->AddEntry((TObject*)0, ("#sigma_{CB}= "+tostr(sg_p1->getVal(),2)+" #pm "+tostr(sg_p1->getError(),2)+" GeV").c_str(), "");
     
     // std::cout<<"chi2/dof = "<<plot->chiSquare()<<std::endl;
     
@@ -299,7 +299,7 @@ int Display_SignalFits(std::string postfix,
         h_mX_SR->SetTitle(("m_{X} Peak in Signal MC (m_{X}="+masses.at(i)+" GeV); m_{X} (GeV)").c_str());
         h_mX_SR->Rebin(rebin);
         
-        TLegend *leg = new TLegend(0.75,0.75,0.6,0.9,NULL,"brNDC");
+        TLegend *leg = new TLegend(0.75,0.75,0.5,0.9,NULL,"brNDC");
         leg->SetBorderSize(0);
         leg->SetTextSize(0.035);
         leg->SetTextFont(42);
@@ -339,7 +339,7 @@ int Display_SignalFits(std::string postfix,
         
         plot_vg->SetTitle("");
         plot_vg->GetYaxis()->SetRangeUser(0.01, 100);
-        plot_vg->GetXaxis()->SetRangeUser(imass-200, imass+200);
+        plot_vg->GetXaxis()->SetRangeUser(imass-400, imass+400);
         //plot_vg->GetXaxis()->SetRangeUser(rangeLoLocal, rangeHiLocal);
         plot_vg->GetXaxis()->SetLabelOffset(0.03);
         plot_vg->GetXaxis()->SetNdivisions(505);
@@ -365,7 +365,7 @@ int Display_SignalFits(std::string postfix,
 
         RooPlot* frameP = x->frame() ;
         frameP->SetTitle("");
-        frameP->GetXaxis()->SetRangeUser(imass-200, imass+200);
+        frameP->GetXaxis()->SetRangeUser(imass-400, imass+400);
         //frameP->GetXaxis()->SetRangeUser(rangeLoLocal, rangeHiLocal);
 
         frameP->addPlotable(hpull,"P");
@@ -417,7 +417,7 @@ int Display_SignalFits(std::string postfix,
         outfile<<"</table>"<<std::endl;
         
         // Close all files
-        //file->Close();
+        file->Close();
         /*	file_JECp1->Close();
          file_JECm1->Close();
          file_JERp1->Close();
