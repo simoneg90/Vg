@@ -9,7 +9,7 @@ masses=(
 )
 cleanUp=0
 rebin=5
-debug=0
+debug=1
 
 while getopts "h?cr:d" opt; do
     case "$opt" in
@@ -33,7 +33,7 @@ do
     if [ $cleanUp -eq 0 ]; then
         ./buildInputs.sh $rebin $m
         ./buildDatacards.sh $m
-        #./runLimits.sh $debug $m
+        ./runLimits.sh $debug $m
     fi
     
     if [ $cleanUp -eq 1 ]; then
