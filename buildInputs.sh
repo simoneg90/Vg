@@ -9,6 +9,7 @@ mass=$2
 
 for name in ${postfix[@]}
 do
+    rm SignalFits/*
     echo $name
     echo
     echo "root -x -b -l -q Display_SignalFits.cc\(\"${name}\"\,\"../fitFilesBtagSF/\",\"\",\"histos_signal-\",${mass},${rebin}\) > signal${mass}_${name}_sig.log"
