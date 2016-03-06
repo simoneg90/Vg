@@ -40,7 +40,7 @@ bool useRatioFit=false;
 std::string tags="nominal"; // MMMM
 
 double SR_lo=600.;
-double SR_hi=3500.;
+double SR_hi=3600.;
 
 Double_t ErfExp(Double_t x, Double_t c, Double_t offset, Double_t width){
     if(width<1e-2)width=1e-2;
@@ -151,6 +151,7 @@ void BackgroundPrediction(std::string pname,int rebin_factor)
 {
     rebin = rebin_factor;
     std::string fname = std::string("../fitFilesBtagSF/") + pname + std::string("/histos_bkg.root");
+    //std::string fname = std::string("../fitFilesAll/") + pname + std::string("/histos_bkg.root");
     
     gStyle->SetOptStat(000000000);
     gStyle->SetPadGridX(0);
@@ -191,9 +192,11 @@ void BackgroundPrediction(std::string pname,int rebin_factor)
     }
     h_SR_Prediction->SetMarkerSize(0.7);
     h_SR_Prediction->GetYaxis()->SetTitleOffset(1.2);
+    h_SR_Prediction->Sumw2();
     
     
     RooRealVar x("x", "m_{X} (GeV)", SR_lo, SR_hi);
+    //RooRealVar x("x", "m_{X} (GeV)", SR_lo, 2000);
     
     /*  RooRealVar bg_p0("bg_p0", "bg_p0", 700., 1200.);
 	    RooRealVar bg_p1("bg_p1", "bg_p1", 50., 300.1);
@@ -202,9 +205,9 @@ void BackgroundPrediction(std::string pname,int rebin_factor)
 	    string name_output="CR_RooFit_GaussExp";
 	    */
     
-    RooRealVar bg_p0((std::string("bg_p0_")+pname).c_str(), "bg_p0", 0., 200.);
-    RooRealVar bg_p1((std::string("bg_p1_")+pname).c_str(), "bg_p1", 0., 30.1);
-    RooRealVar bg_p2((std::string("bg_p2_")+pname).c_str(), "bg_p2", 0., 10.1);
+    RooRealVar bg_p0((std::string("bg_p0_")+pname).c_str(), "bg_p0", 2.5, 0., 30);
+    RooRealVar bg_p1((std::string("bg_p1_")+pname).c_str(), "bg_p1", 4.7, 0., 50);
+    RooRealVar bg_p2((std::string("bg_p2_")+pname).c_str(), "bg_p2", 0.004,0., 10.1);
     RooGenericPdf bg = RooGenericPdf((std::string("bg_")+pname).c_str(),"(pow(1-@0/13000,@1)/pow(@0/13000,@2+@3*log(@0/13000)))",RooArgList(x,bg_p0,bg_p1,bg_p2));
     string name_output = "CR_RooFit_Exp";
     
@@ -233,9 +236,11 @@ void BackgroundPrediction(std::string pname,int rebin_factor)
      RooBernstein bg("bg", "bg", x, RooArgList(*bg_p1,*bg_p2, *bg_p3, *bg_p4, *bg_p5));// *bg_p6, *bg_p7, *bg_p8));
      string name_output = "CR_RooFit_Bernestein";
      */
+
     
     RooDataHist pred("pred", "Prediction from SB", RooArgList(x), h_SR_Prediction);
-    RooFitResult *r_bg=bg.fitTo(pred, RooFit::Range(SR_lo, SR_hi), RooFit::Save());
+    RooFitResult *r_bg=bg.fitTo(pred, RooFit::Range(SR_lo, SR_hi), RooFit::Save());//RooFit::SumW2Error(kTRUE)
+    //RooFitResult *r_bg=bg.fitTo(pred, RooFit::Range(SR_lo, SR_hi), RooFit::Save(),RooFit::SumW2Error(kTRUE));
     //RooDataHist  data_=*(bg.generateBinned(x, h_mMMMMa_3Tag_SR_Prediction->Integral(h_mMMMMa_3Tag_SR_Prediction->FindBin(SR_lo), h_mX_SR->FindBin(SR_hi)-1) , RooAbsData::Poisson));
     std::cout<<" --------------------- Building Envelope --------------------- "<<std::endl;
     std::cout<< "bg_p0_"<< pname << "   param   "<<bg_p0.getVal() <<  " "<<bg_p0.getError()<<std::endl;
@@ -273,14 +278,14 @@ void BackgroundPrediction(std::string pname,int rebin_factor)
     int nbins = (int) (SR_hi- SR_lo)/rebin;
     x.setBins(nbins);
     
-    std::cout << "chi2(data) " <<  aC_plot->chiSquare()<<std::endl;
+    std::cout << "chi2(data) " <<  aC_plot->chiSquare((std::string("bg_")+pname).c_str(),"h_SR_Prediction",3)<<std::endl;
     
     //std::cout << "p-value: data     under hypothesis H0:  " << TMath::Prob(chi2_data->getVal(), nbins - 1) << std::endl;
     
     
     aC_plot->GetXaxis()->SetRangeUser(SR_lo, SR_hi);
     aC_plot->GetXaxis()->SetLabelOffset(0.03);
-    aC_plot->GetYaxis()->SetRangeUser(1, 500.);
+    aC_plot->GetYaxis()->SetRangeUser(0.3, 500.);
     h_SR_Prediction->GetXaxis()->SetRangeUser(SR_lo, SR_hi);
     string rebin_ = itoa(rebin);
     
@@ -310,7 +315,8 @@ void BackgroundPrediction(std::string pname,int rebin_factor)
     
     TLegend *leg = new TLegend(0.85625,0.7721654,0.6765625,0.8903839,NULL,"brNDC");
     leg->SetBorderSize(0);
-    leg->SetTextSize(0.035);
+    leg->SetTextSize(0.04);
+    leg->SetTextFont(42);
     leg->SetLineColor(1);
     leg->SetLineStyle(1);
     leg->SetLineWidth(2);
@@ -320,7 +326,7 @@ void BackgroundPrediction(std::string pname,int rebin_factor)
     h_SR_Prediction->SetLineColor(kBlack);
     h_SR_Prediction->SetMarkerStyle(20);
     //h_mMMMMa_3Tag_SR->GetXaxis()->SetTitleSize(0.09);
-    leg->AddEntry(h_SR_Prediction, "Data", "lep");
+    leg->AddEntry(h_SR_Prediction, "Data: sideband", "lep");
     TH1F *h=new TH1F();
     h->SetLineColor(kRed);
     h->SetLineWidth(3);
@@ -336,7 +342,8 @@ void BackgroundPrediction(std::string pname,int rebin_factor)
     frameP->GetXaxis()->SetRangeUser(SR_lo, SR_hi);
     
     frameP->addPlotable(hpull,"P");
-    frameP->GetYaxis()->SetRangeUser(-5,5);
+    frameP->GetYaxis()->SetRangeUser(-7,7);
+    frameP->GetYaxis()->SetNdivisions(505);
     frameP->GetYaxis()->SetTitle("Pull");
     
     frameP->GetYaxis()->SetTitleSize((1.-xPad)/xPad*0.06);
