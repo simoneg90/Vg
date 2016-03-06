@@ -22,7 +22,7 @@ do
     
     # now we put all of our outputs in one place so we can process them later
     cp -r SignalFits info_${mass}_${name}
-    cp ${name}_multipdf.root info_${mass}_${name}/
+    #cp ${name}_multipdf.root info_${mass}_${name}/
     mv CR_RooFit_Exp_log.pdf info_${mass}_${name}/
     mv CR_RooFit_Exp.pdf info_${mass}_${name}/
     mv signal${mass}_${name}_sig.log info_${mass}_${name}/

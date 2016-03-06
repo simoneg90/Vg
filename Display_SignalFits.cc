@@ -98,12 +98,12 @@ RooPlot* fitSignal(TH1F *h, std::string mass, int color, TLegend *leg, Params &p
     {
         rangeLo=800., rangeHi=1300.;
         sg_p0=new RooRealVar((std::string("sg_p0")+postfix).c_str(), "sg_p0", 1000, 900., 1100.);
-        sg_p1=new RooRealVar((std::string("sg_p1")+postfix).c_str(), "sg_p1", 32, 5., 40.);
-        sg_p2=new RooRealVar((std::string("sg_p2")+postfix).c_str(), "sg_p2", 12, 0., 200.);
-        sg_p3=new RooRealVar((std::string("sg_p3")+postfix).c_str(), "sg_p3", 15, 0., 300.);
+        sg_p1=new RooRealVar((std::string("sg_p1")+postfix).c_str(), "sg_p1", 31, 5., 40.);
+        sg_p2=new RooRealVar((std::string("sg_p2")+postfix).c_str(), "sg_p2", 1.2, 0., 200.);
+        sg_p3=new RooRealVar((std::string("sg_p3")+postfix).c_str(), "sg_p3", 145, 0., 300.);
         sg_p4=new RooRealVar((std::string("sg_p4")+postfix).c_str(), "sg_p4", 500., 1100.);
-        sg_p5=new RooRealVar((std::string("sg_p5")+postfix).c_str(), "sg_p5", 100, 10., 3000.);
-        sg_p6=new RooRealVar((std::string("sg_p6")+postfix).c_str(), "sg_p6", 1, 0.,10.);
+        sg_p5=new RooRealVar((std::string("sg_p5")+postfix).c_str(), "sg_p5", 150, 10., 3000.);
+        sg_p6=new RooRealVar((std::string("sg_p6")+postfix).c_str(), "sg_p6", 0.96, 0.,10.);
     }
     else if  (mass=="2000")
     {
@@ -417,7 +417,7 @@ int Display_SignalFits(std::string postfix,
         outfile<<"</table>"<<std::endl;
         
         // Close all files
-        file->Close();
+        //file->Close();
         /*	file_JECp1->Close();
          file_JECm1->Close();
          file_JERp1->Close();
