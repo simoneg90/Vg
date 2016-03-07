@@ -23,7 +23,7 @@ jmax * number of backgrounds
 kmax * number of systematic uncertainty sources
 ----------
 shapes signal     Vg w_signal_${mass}.root      Vg:signal_fixed_${name}
-shapes background Vg w_background_GaussExp.root Vg:bg_${name}
+shapes background Vg w_background_GaussExp.root Vg:bg_
 shapes data_obs   Vg w_data.root                Vg:data_obs
 ----------
 ## Observation
@@ -34,7 +34,7 @@ bin                   Vg          Vg
 process               signal      background
 process               0           1
 rate                  ${sig_norm} 1
-cms_lumi_13TeV  lnN   1.026       -     
+cms_lumi_13TeV  lnN   1.027       -     
 cms_btag_sf_13TeV       lnN              0.833       -         
 cms_btag_sf_13TeV       lnN              1.2         -
 cms_JES_13TeV           lnN              1.02        -         
@@ -53,6 +53,7 @@ EOF
     then
 	sed -i 's/WHATKIND/Anti/' ${dirName}/${dcardName}
 	sed -i '/cms_btag_sf_13TeV.*1\.2.*/d' ${dirName}/${dcardName}
+	grep 'bg_' ${dirName}/${bgLogName} | grep 'param' >> ${dirName}/${dcardName}
     else
 	sed -i 's/WHATKIND//' ${dirName}/${dcardName}
 	sed -i '/cms_btag_sf_13TeV.*0.833.*/d' ${dirName}/${dcardName}
