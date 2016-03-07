@@ -23,7 +23,7 @@ jmax * number of backgrounds
 kmax * number of systematic uncertainty sources
 ----------
 shapes signal     Vg w_signal_${mass}.root      Vg:signal_fixed_${name}
-shapes background Vg w_background_GaussExp.root Vg:bg_
+shapes background Vg w_background_GaussExp.root Vg:bg_${name}
 shapes data_obs   Vg w_data.root                Vg:data_obs
 ----------
 ## Observation
@@ -48,7 +48,7 @@ EOF
     
     #now add the systematics to the card
     #grep 'signal_' ${dirName}/index.html | awk '{print $1 " " $2 " " $3 " " $4}' >>  ${dirName}/${dcardName}
-    grep 'bg_' ${dirName}/${bgLogName} | grep 'param' >> ${dirName}/${dcardName}
+    #grep 'bg_' ${dirName}/${bgLogName} | grep 'param' >> ${dirName}/${dcardName}
     if [[ $dcardName == *"anti"* ]]
     then
 	sed -i 's/WHATKIND/Anti/' ${dirName}/${dcardName}
