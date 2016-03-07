@@ -8,8 +8,8 @@ masses=(
     750 1000 2000 3000
 )
 cleanUp=0
-rebin=5
-debug=1
+rebin=10
+debug=0
 
 while getopts "h?cr:d" opt; do
     case "$opt" in
