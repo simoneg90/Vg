@@ -20,7 +20,8 @@
 #include <RooDataHist.h>
 #include <RooGenericPdf.h>
 #include <RooRealVar.h>
-#include <RooPlot.h>*/
+#include <RooPlot.h>
+*/
 
 #include "CMS_lumi.C"
 #include "tdrstyle.C"
@@ -39,7 +40,7 @@ bool useRatioFit=false;
 
 std::string tags="nominal"; // MMMM
 
-double SR_lo=600.;
+double SR_lo=650.;
 double SR_hi=3600.;
 
 Double_t ErfExp(Double_t x, Double_t c, Double_t offset, Double_t width){
@@ -206,7 +207,7 @@ void BackgroundPrediction(std::string pname,int rebin_factor)
     RooRealVar bg_p0((std::string("bg_p0_")+pname).c_str(), "bg_p0", 2.5, 0., 200);
     RooRealVar bg_p1((std::string("bg_p1_")+pname).c_str(), "bg_p1", 4.7, 0., 50);
     RooRealVar bg_p2((std::string("bg_p2_")+pname).c_str(), "bg_p2", 0.004,0., 10.1);
-    RooGenericPdf bg = RooGenericPdf((std::string("bg_")+pname).c_str(),"(pow(1-@0/13000,@1)/pow(@0/13000,@2+@3*log(@0/13000)))",RooArgList(x,bg_p0,bg_p1,bg_p2));
+    RooGenericPdf bg = RooGenericPdf((std::string("bg_")+blah).c_str(),"(pow(1-@0/13000,@1)/pow(@0/13000,@2+@3*log(@0/13000)))",RooArgList(x,bg_p0,bg_p1,bg_p2));
     string name_output = "CR_RooFit_Exp";
 
 
@@ -340,7 +341,7 @@ void BackgroundPrediction(std::string pname,int rebin_factor)
 
 
 	    TFile *f = new TFile("antibtag_multipdf.root");
-	    RooWorkspace* xf = f->Get("wtemplates");
+	    RooWorkspace* xf = (RooWorkspace*)f->Get("wtemplates");
 	    for(int i=0;i<=1;i++){
 		    RooMultiPdf *alternative = (RooMultiPdf *)xf->pdf("model_bkg_AntiBtag");
 		    RooAbsPdf *alt_bg = alternative->getPdf(alternative->getCurrentIndex()+i);//->clone();
@@ -382,16 +383,15 @@ void BackgroundPrediction(std::string pname,int rebin_factor)
 	    //std::cout<<"env_pdf_0_13TeV_vvdijet1_coeff1 param "<<w_alt->var("env_pdf_0_13TeV_vvdijet1_coeff1")->getVal()<<"   "<<w_alt->var("env_pdf_0_13TeV_vvdijet1_coeff1")->getError()<<std::endl;
 	    //std::cout<<"env_pdf_0_13TeV_vvdijet1_log1 param  "<<w_alt->var("env_pdf_0_13TeV_vvdijet1_log1")->getVal()<<"   "<<w_alt->var("env_pdf_0_13TeV_vvdijet1_log1")->getError()<<std::endl;
 
-    }else {
-
-	    p_1->SetLogy();   
+    } else {
+	    p_1->SetLogy();
 	    c_rooFit->Update();
 	    c_rooFit->SaveAs((name_output+"_log.pdf").c_str());
     }	
 
 
     // ------------------------------------------
-    RooRealVar nBackground((std::string("bg_")+pname+std::string("_norm")).c_str(),"nbkg",h_mX_SR->GetSumOfWeights());
+    //RooRealVar nBackground((std::string("bg_")+pname+std::string("_norm")).c_str(),"nbkg",h_mX_SR->GetSumOfWeights());
 
     RooWorkspace *w=new RooWorkspace("Vg");
     w->import(bg);
