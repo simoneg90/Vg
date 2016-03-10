@@ -40,7 +40,7 @@ bool useRatioFit=false;
 
 std::string tags="nominal"; // MMMM
 
-double SR_lo=650.;
+double SR_lo=600.;
 double SR_hi=3600.;
 
 Double_t ErfExp(Double_t x, Double_t c, Double_t offset, Double_t width){
@@ -204,15 +204,15 @@ void BackgroundPrediction(std::string pname,int rebin_factor)
     pname=""; //Antibtag=tag to constrain b-tag to the anti-btag shape
 
 
-    RooRealVar bg_p0((std::string("bg_p0_")+pname).c_str(), "bg_p0", 2.5, 0., 200);
-    RooRealVar bg_p1((std::string("bg_p1_")+pname).c_str(), "bg_p1", 4.7, 0., 50);
-    RooRealVar bg_p2((std::string("bg_p2_")+pname).c_str(), "bg_p2", 0.004,0., 10.1);
+    RooRealVar bg_p0((std::string("bg_p0_")+pname).c_str(), "bg_p0", 4.2, 0., 200);
+    RooRealVar bg_p1((std::string("bg_p1_")+pname).c_str(), "bg_p1", 4.5, 0., 300);
+    RooRealVar bg_p2((std::string("bg_p2_")+pname).c_str(), "bg_p2", 0.000047,0., 10.1);
     RooGenericPdf bg = RooGenericPdf((std::string("bg_")+blah).c_str(),"(pow(1-@0/13000,@1)/pow(@0/13000,@2+@3*log(@0/13000)))",RooArgList(x,bg_p0,bg_p1,bg_p2));
     string name_output = "CR_RooFit_Exp";
 
 
     RooDataHist pred("pred", "Prediction from SB", RooArgList(x), h_SR_Prediction);
-    RooFitResult *r_bg=bg.fitTo(pred, RooFit::Range(SR_lo, SR_hi), RooFit::Save());//RooFit::SumW2Error(kTRUE)
+    RooFitResult *r_bg=bg.fitTo(pred, RooFit::Minimizer("Minuit2"), RooFit::Range(SR_lo, SR_hi), RooFit::SumW2Error(kTRUE), RooFit::Save());//RooFit::SumW2Error(kTRUE)
     //RooFitResult *r_bg=bg.fitTo(pred, RooFit::Range(SR_lo, SR_hi), RooFit::Save(),RooFit::SumW2Error(kTRUE));
     //RooDataHist  data_=*(bg.generateBinned(x, h_mMMMMa_3Tag_SR_Prediction->Integral(h_mMMMMa_3Tag_SR_Prediction->FindBin(SR_lo), h_mX_SR->FindBin(SR_hi)-1) , RooAbsData::Poisson));
     std::cout<<" --------------------- Building Envelope --------------------- "<<std::endl;
