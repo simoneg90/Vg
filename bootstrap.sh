@@ -11,7 +11,7 @@ popd
 git clone https://github.com/pandolf/diphotons.git
 rm -rf diphotons/Analysis
 rm -rf diphotons/FWLiteAlgos
-rm -rf SCFootprintRemoval
-rm -rf fullAnalysisRoma
+rm -rf diphotons/SCFootprintRemoval
+rm -rf diphotons/fullAnalysisRoma
 git clone https://github.com/quittnat/flashggFinalFit.git -b topic-EXO-envelope-method
 popd
