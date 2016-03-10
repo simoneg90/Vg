@@ -204,15 +204,16 @@ void BackgroundPrediction(std::string pname,int rebin_factor)
     pname=""; //Antibtag=tag to constrain b-tag to the anti-btag shape
 
 
-    RooRealVar bg_p0((std::string("bg_p0_")+pname).c_str(), "bg_p0", 4.2, 0., 200);
-    RooRealVar bg_p1((std::string("bg_p1_")+pname).c_str(), "bg_p1", 4.5, 0., 300);
-    RooRealVar bg_p2((std::string("bg_p2_")+pname).c_str(), "bg_p2", 0.000047,0., 10.1);
+    RooRealVar bg_p0((std::string("bg_p0_")+pname).c_str(), "bg_p0", 4.2, 0, 200.);
+    RooRealVar bg_p1((std::string("bg_p1_")+pname).c_str(), "bg_p1", 4.5, 0, 300.);
+    RooRealVar bg_p2((std::string("bg_p2_")+pname).c_str(), "bg_p2", 0.000047, 0, 10.1);
     RooGenericPdf bg = RooGenericPdf((std::string("bg_")+blah).c_str(),"(pow(1-@0/13000,@1)/pow(@0/13000,@2+@3*log(@0/13000)))",RooArgList(x,bg_p0,bg_p1,bg_p2));
     string name_output = "CR_RooFit_Exp";
 
 
     RooDataHist pred("pred", "Prediction from SB", RooArgList(x), h_SR_Prediction);
-    RooFitResult *r_bg=bg.fitTo(pred, RooFit::Minimizer("Minuit2"), RooFit::Range(SR_lo, SR_hi), RooFit::SumW2Error(kTRUE), RooFit::Save());//RooFit::SumW2Error(kTRUE)
+    RooFitResult *r_bg=bg.fitTo(pred, RooFit::Minimizer("Minuit2"), RooFit::Range(SR_lo, SR_hi), RooFit::SumW2Error(kTRUE), RooFit::Save());	
+    //RooFitResult *r_bg=bg.fitTo(pred, RooFit::Range(SR_lo, SR_hi), RooFit::Save());
     //RooFitResult *r_bg=bg.fitTo(pred, RooFit::Range(SR_lo, SR_hi), RooFit::Save(),RooFit::SumW2Error(kTRUE));
     //RooDataHist  data_=*(bg.generateBinned(x, h_mMMMMa_3Tag_SR_Prediction->Integral(h_mMMMMa_3Tag_SR_Prediction->FindBin(SR_lo), h_mX_SR->FindBin(SR_hi)-1) , RooAbsData::Poisson));
     std::cout<<" --------------------- Building Envelope --------------------- "<<std::endl;
@@ -272,7 +273,7 @@ void BackgroundPrediction(std::string pname,int rebin_factor)
 
 
     aC_plot->SetTitle("");
-    TPaveText *pave = new TPaveText(0.85,0.7,0.67,0.8,"NDC");
+    TPaveText *pave = new TPaveText(0.85,0.4,0.67,0.5,"NDC");
     //TLegend *leg = new TLegend(0.85625,0.7721654,0.6765625,0.8903839,NULL,"brNDC");`
     pave->SetBorderSize(0);
     pave->SetTextSize(0.05);
@@ -287,7 +288,7 @@ void BackgroundPrediction(std::string pname,int rebin_factor)
     pave->AddText(name);
     pave->Draw();
 
-    TLegend *leg = new TLegend(0.85,0.75,0.65,0.90,NULL,"brNDC");
+    TLegend *leg = new TLegend(0.35,0.55,0.85,0.90,NULL,"brNDC");
     leg->SetBorderSize(0);
     leg->SetTextSize(0.05);
     leg->SetTextFont(42);
@@ -340,21 +341,21 @@ void BackgroundPrediction(std::string pname,int rebin_factor)
 
 
 
-	    TFile *f = new TFile("antibtag_multipdf.root");
+	    TFile *f = new TFile("btag_all_multipdf.root");
 	    RooWorkspace* xf = (RooWorkspace*)f->Get("wtemplates");
-	    for(int i=0;i<=1;i++){
-		    RooMultiPdf *alternative = (RooMultiPdf *)xf->pdf("model_bkg_AntiBtag");
+	    for(int i=1;i<=1;i++){
+		    RooMultiPdf *alternative = (RooMultiPdf *)xf->pdf("model_bkg_Btag");
 		    RooAbsPdf *alt_bg = alternative->getPdf(alternative->getCurrentIndex()+i);//->clone();
 		    RooWorkspace *w_alt=new RooWorkspace("Vg");
-		    w_alt->import(*alt_bg, RooFit::RenameVariable(alt_bg->GetName(),"alt_bg"));
+		    w_alt->import(*alt_bg, RooFit::RenameVariable(alt_bg->GetName(),("alt_bg_"+blah).c_str()));
 		    w_alt->Print("V");
 		    std::cerr<<w_alt->var("x")<<std::endl;
 		    RooRealVar * range_ = w_alt->var("x");
 		    range_->setRange(SR_lo,SR_hi);
-
+		    char* asd = ("alt_bg_"+blah).c_str()	;
 		    w_alt->import(nBackground2);
 		    std::cout<<alt_bg->getVal() <<std::endl;
-		    w_alt->pdf("alt_bg")->fitTo(pred, RooFit::Range(SR_lo, SR_hi), RooFit::Save());
+		    w_alt->pdf(asd)->fitTo(pred, RooFit::Range(SR_lo, SR_hi), RooFit::Save());
 		    alt_bg->plotOn(aC_plot, RooFit::LineColor(i+1), RooFit::LineStyle(i+2));
 		    p_1->cd();
 		    aC_plot->GetYaxis()->SetRangeUser(0.01, maxdata*50.);
@@ -372,16 +373,19 @@ void BackgroundPrediction(std::string pname,int rebin_factor)
 	    c_rooFit->Update();
 	    c_rooFit->SaveAs((name_output+blah+"_multipdf.pdf").c_str());
 
+
+	     //3
+	   std::cout<<"env_pdf_0_13TeV_exp1_p1  param "<< w_alt->var("env_pdf_0_13TeV_exp1_p1")->getVal()<<"   "<<w_alt->var("env_pdf_0_13TeV_exp1_p1")->getError()<<std::endl;	
 	    //+0:
-	    //std::cout<<"env_pdf_0_13TeV_exp1_p1  param "<< w_alt->var("env_pdf_0_13TeV_exp1_p1")->getVal()<<"   "<<w_alt->var("env_pdf_0_13TeV_exp1_p1")->getError()<<std::endl;
+	    //std::cout<<"env_pdf_0_13TeV_expow1_pow1  param "<< w_alt->var("env_pdf_0_13TeV_expow1_pow1")->getVal()<<"   "<<w_alt->var("env_pdf_0_13TeV_expow1_pow1")->getError()<<std::endl;
 	    //+1
-	    //std::cout<<"env_pdf_0_13TeV_exp1_f1  param "<< w_alt->var("env_pdf_0_13TeV_exp1_f1")->getVal()<<"   "<<w_alt->var("env_pdf_0_13TeV_exp1_f1")->getError()<<std::endl;
-	    //std::cout<<"env_pdf_0_13TeV_exp1_p1  param "<< w_alt->var("env_pdf_0_13TeV_exp1_p1")->getVal()<<"   "<<w_alt->var("env_pdf_0_13TeV_exp1_p1")->getError()<<std::endl;
+	    //std::cout<<"env_pdf_0_13TeV_expow1_exp1  param "<< w_alt->var("env_pdf_0_13TeV_expow1_exp1")->getVal()<<"   "<<w_alt->var("env_pdf_0_13TeV_expow1_exp1")->getError()<<std::endl;
+	    //std::cout<<"env_pdf_0_13TeV_expow1_pow1  param "<< w_alt->var("env_pdf_0_13TeV_expow1_pow1")->getVal()<<"   "<<w_alt->var("env_pdf_0_13TeV_expow1_pow1")->getError()<<std::endl;
 	    //std::cout<<"env_pdf_0_13TeV_exp1_p2  param "<< w_alt->var("env_pdf_0_13TeV_exp1_p2")->getVal()<<"   "<<w_alt->var("env_pdf_0_13TeV_exp1_p2")->getError()<<std::endl;
 
-	    //+2 vvdijet1 +3 vvdijet1
-	    //std::cout<<"env_pdf_0_13TeV_vvdijet1_coeff1 param "<<w_alt->var("env_pdf_0_13TeV_vvdijet1_coeff1")->getVal()<<"   "<<w_alt->var("env_pdf_0_13TeV_vvdijet1_coeff1")->getError()<<std::endl;
-	    //std::cout<<"env_pdf_0_13TeV_vvdijet1_log1 param  "<<w_alt->var("env_pdf_0_13TeV_vvdijet1_log1")->getVal()<<"   "<<w_alt->var("env_pdf_0_13TeV_vvdijet1_log1")->getError()<<std::endl;
+	    //+2 atlas1 +3 atlas1
+	    //std::cout<<"env_pdf_0_13TeV_atlas1_coeff1 param "<<w_alt->var("env_pdf_0_13TeV_atlas1_coeff1")->getVal()<<"   "<<w_alt->var("env_pdf_0_13TeV_atlas1_coeff1")->getError()<<std::endl;
+	   // std::cout<<"env_pdf_0_13TeV_atlas1_log1 param  "<<w_alt->var("env_pdf_0_13TeV_atlas1_log1")->getVal()<<"   "<<w_alt->var("env_pdf_0_13TeV_atlas1_log1")->getError()<<std::endl;
 
     } else {
 	    p_1->SetLogy();
