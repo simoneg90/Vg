@@ -96,7 +96,7 @@ RooPlot* fitSignal(TH1F *h, std::string mass, int color, TLegend *leg, Params &p
     }
     else if  (mass=="1000")
     {
-        rangeLo=800., rangeHi=1300.;
+        rangeLo=700., rangeHi=1400.;
         sg_p0=new RooRealVar((std::string("sg_p0")+postfix).c_str(), "sg_p0", 1000, 900., 1100.);
         sg_p1=new RooRealVar((std::string("sg_p1")+postfix).c_str(), "sg_p1", 31, 5., 40.);
         sg_p2=new RooRealVar((std::string("sg_p2")+postfix).c_str(), "sg_p2", 1.2, 0., 200.);
