@@ -6,30 +6,20 @@ postfix=(
 
 rebin=$1
 mass=$2
+fitModel=$3
 
 for name in ${postfix[@]}
 do
-    rm SignalFits/*
+    mkdir info_${mass}_${name}
     echo $name
     echo
-    echo "root -x -b -l -q Display_SignalFits.cc\(\"${name}\"\,\"../fitFilesBtagSF/\",\"\",\"histos_signal-\",${mass},${rebin}\) > signal${mass}_${name}_sig.log"
+    echo "root -x -b -l -q Display_SignalFits.cc\(\"${name}\"\,\"/scratch/osg/lesya/CMSSW_7_1_5/src/limits/Vg/GenSignal\",\"\",\"histos_signal-\",${mass},${rebin}\) > info_${mass}_${name}/signal${mass}_${name}_sig.log"
     echo
-    root -x -b -l -q Display_SignalFits.cc\(\"${name}\"\,\"../fitFilesBtagSF/\",\"\",\"histos_signal-\",${mass},${rebin}\) > signal${mass}_${name}_sig.log
+    root -x -b -l -q Display_SignalFits.cc\(\"${name}\"\,\"/scratch/osg/lesya/CMSSW_7_1_5/src/limits/Vg/GenSignal\",\"\",\"histos_signal-\",${mass},${rebin}\) > info_${mass}_${name}/signal${mass}_${name}_sig.log
     echo
-    echo "root -x -b -l -q BackgroundPrediction.c\(\"${name}\",${rebin}\) > data_${name}_bkg.log"
+    echo "root -x -b -l -q BackgroundPrediction.c\(\"${name}\",${rebin},${fitModel},${mass}\) > info_${mass}_${name}/data_${name}_bkg.log"
     echo
-    root -x -b -l -q BackgroundPrediction.c\(\"${name}\",${rebin}\) > data_${name}_bkg.log
+    root -x -b -l -q BackgroundPrediction.c\(\"${name}\",${rebin},${fitModel},${mass}\) > info_${mass}_${name}/data_${name}_bkg.log
     
-    # now we put all of our outputs in one place so we can process them later
-    cp -r SignalFits info_${mass}_${name}
-    #cp ${name}_multipdf.root info_${mass}_${name}/
-    mv CR_RooFit_Exp_log.pdf info_${mass}_${name}/
-    mv CR_RooFit_Exp.pdf info_${mass}_${name}/
-    mv signal${mass}_${name}_sig.log info_${mass}_${name}/
-    mv data_${name}_bkg.log  info_${mass}_${name}/    
-
-    mv w_data.root info_${mass}_${name}/
-    mv w_background_GaussExp.root info_${mass}_${name}/
-    mv w_signal_${mass}.root info_${mass}_${name}/
 done
 
