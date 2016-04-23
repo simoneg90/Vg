@@ -379,11 +379,11 @@ void BackgroundPrediction(std::string pname,int rebin_factor,int model_number = 
         
         
         
-        TFile *f = new TFile("btag_all_multipdf.root");
+        TFile *f = new TFile("antibtag_multipdf.root");
         RooWorkspace* xf = (RooWorkspace*)f->Get("wtemplates");
         RooWorkspace *w_alt=new RooWorkspace("Vg");
         for(int i=model_number; i<=model_number; i++){
-            RooMultiPdf *alternative = (RooMultiPdf *)xf->pdf("model_bkg_Btag");
+            RooMultiPdf *alternative = (RooMultiPdf *)xf->pdf("model_bkg_AntiBtag");
             std::cout<<"Number of pdfs "<<alternative->getNumPdfs()<<std::endl;
             for (int j=0; j!=alternative->getNumPdfs(); ++j){
                 std::cout<<alternative->getPdf(j)->GetName()<<std::endl;
