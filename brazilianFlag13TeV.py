@@ -3,7 +3,7 @@ from ROOT import *
 import CMS_lumi, tdrstyle
 
 #set the tdr style
-#tdrstyle.setTDRStyle()
+tdrstyle.setTDRStyle()
 
 #change the CMS_lumi variables (see CMS_lumi.py)
 CMS_lumi.lumi_13TeV = "2.7 fb^{-1}"
@@ -11,93 +11,25 @@ CMS_lumi.writeExtraText = 1
 CMS_lumi.extraText = "Preliminary"
 CMS_lumi.lumi_sqrtS = "13 TeV" # used with iPeriod = 0, e.g. for simulation-only plots (default is an empty string)
 
-iPos = 11
+iPos = 0
 if( iPos==0 ): CMS_lumi.relPosX = 0.12
 
 iPeriod =4
 
 
 withAcceptance=False
-unblind=False
+unblind=True
 
-gROOT.Reset()
-gROOT.SetStyle("Plain")
-gStyle.SetOptStat(0)
-gStyle.SetOptFit(0)
-gStyle.SetTitleOffset(1.2,"Y")
-gStyle.SetPadLeftMargin(0.18)
-gStyle.SetPadBottomMargin(0.15)
-gStyle.SetPadTopMargin(0.08)
-gStyle.SetPadRightMargin(0.05)
-gStyle.SetMarkerSize(0.5)
-gStyle.SetHistLineWidth(1)
-gStyle.SetStatFontSize(0.020)
-gStyle.SetTitleSize(0.06, "XYZ")
-gStyle.SetLabelSize(0.05, "XYZ")
-gStyle.SetNdivisions(510, "XYZ")
-gStyle.SetLegendBorderSize(0)
-gStyle.SetPadBorderMode(0)
-gStyle.SetFrameBorderMode(0)
-gStyle.SetPadBottomMargin(0.12)
-gStyle.SetPadLeftMargin(0.12)
-gStyle.SetCanvasColor(kWhite)
-gStyle.SetCanvasDefH(600) 
-gStyle.SetCanvasDefW(600)
-gStyle.SetCanvasDefX(0)   
-gStyle.SetCanvasDefY(0)
-
-gStyle.SetPadTopMargin(0.05)
-gStyle.SetPadBottomMargin(0.15)
-gStyle.SetPadLeftMargin(0.15)
-gStyle.SetPadRightMargin(0.05)
-
-gStyle.SetPadBorderMode(0)
-gStyle.SetPadColor(kWhite)
-gStyle.SetGridColor(0)
-gStyle.SetGridStyle(3)
-gStyle.SetGridWidth(1)
-
-gStyle.SetFrameBorderMode(0)
-gStyle.SetFrameBorderSize(1)
-gStyle.SetFrameFillColor(0)
-gStyle.SetFrameFillStyle(0)
-gStyle.SetFrameLineColor(1)
-gStyle.SetFrameLineStyle(1)
-gStyle.SetFrameLineWidth(1)
-
-gStyle.SetAxisColor(1, "XYZ")
-gStyle.SetStripDecimals(kTRUE)
-gStyle.SetTickLength(0.03, "XYZ")
-gStyle.SetNdivisions(605, "XYZ")
-gStyle.SetPadTickX(1)  # To get tick marks on the opposite side of the frame
-gStyle.SetPadTickY(1)
-gStyle.SetGridColor(0)
-gStyle.SetGridStyle(3)
-gStyle.SetGridWidth(1)
-
-
-gStyle.SetTitleColor(1, "XYZ")
-gStyle.SetTitleFont(42, "XYZ")
-gStyle.SetTitleSize(0.05, "XYZ")
-gStyle.SetTitleXOffset(1.15)#0.9)
-gStyle.SetTitleYOffset(1.3) # => 1.15 if exponents
-gStyle.SetLabelColor(1, "XYZ")
-gStyle.SetLabelFont(42, "XYZ")
-gStyle.SetLabelOffset(0.007, "XYZ")
-gStyle.SetLabelSize(0.045, "XYZ")
-
-gStyle.SetPadBorderMode(0)
-gStyle.SetFrameBorderMode(0)
-gStyle.SetTitleTextColor(1)
-gStyle.SetTitleFillColor(10)
-gStyle.SetTitleFontSize(0.05)
+gStyle.SetPadRightMargin(0.06)
+gStyle.SetPadTopMargin(0.06)
 
 def Plot(files, label, obs):
 
     radmasses = []
+    imass=650
     for f in files:
-#        radmasses.append(float(f.replace("CMS_jj_","").split("_")[0])/1000.)
-        radmasses = [750, 1000, 2000, 3000]#,3.5,4.,4.5]
+        radmasses.append(imass)
+        imass=imass+10
     print radmasses
 
     efficiencies={}
@@ -134,8 +66,6 @@ def Plot(files, label, obs):
     mg = rt.TMultiGraph()
     mg.SetTitle("X -> ZZ")
     c1 = rt.TCanvas("c1","A Simple Graph Example",200,10,600,600)
-    c1.SetGridx(1)
-    c1.SetGridy(1)
     x = []
     yobs = []
     y2up = []
@@ -154,7 +84,7 @@ def Plot(files, label, obs):
 
     grobs = rt.TGraphErrors(1)
     grobs.SetMarkerStyle(rt.kFullDotLarge)
-    grobs.SetLineColor(rt.kRed)
+    grobs.SetLineColor(rt.kBlack)
     grobs.SetLineWidth(3)
     gr2up = rt.TGraphErrors(1)
     gr2up.SetMarkerColor(0)
@@ -174,7 +104,7 @@ def Plot(files, label, obs):
         gr2up.SetPoint(j, radmasses[j], y2up[j])
         gr1up.SetPoint(j, radmasses[j], y1up[j])
         grmean.SetPoint(j, radmasses[j], ymean[j])
-	print(ymean[j])
+        print(radmasses[j], ymean[j], yobs[j])
         gr1down.SetPoint(j, radmasses[j], y1down[j])    
         gr2down.SetPoint(j, radmasses[j], y2down[j])
         #print " observed %f %f" %(radmasses[j],yobs[j])
@@ -195,26 +125,14 @@ def Plot(files, label, obs):
     if withAcceptance:
         mg.GetYaxis().SetTitle("#sigma #times B("+resonance+" #rightarrow "+label.split("_")[0].replace("RS1","").replace("Bulk","")+") #times A (fb)")
     else:
-        mg.GetYaxis().SetTitle("#sigma #times B("+resonance+" #rightarrow Z#gamma) (fb)")
-    mg.GetYaxis().SetLabelFont(42)	
-    mg.GetXaxis().SetLabelFont(42)
-    mg.GetYaxis().SetTitleFont(42)
-    mg.GetXaxis().SetTitleFont(42)
-    mg.GetYaxis().SetTitleSize(0.035)
-    mg.GetXaxis().SetTitleSize(0.035)
-    mg.GetXaxis().SetLabelSize(0.045)
-    mg.GetYaxis().SetLabelSize(0.045)
-    mg.GetYaxis().SetRangeUser(0.5,500)
-    mg.GetYaxis().SetTitleOffset(1.4)
-    mg.GetYaxis().CenterTitle(True)
-    mg.GetXaxis().SetTitleOffset(1.1)
-    mg.GetXaxis().CenterTitle(True)
+        mg.GetYaxis().SetTitle("95% CL UL on #sigma #times B(X#rightarrowZ#gamma) (fb)")
+    mg.GetYaxis().SetRangeUser(0.9,1000)
     mg.GetXaxis().SetNdivisions(508)
 
     if "qW" in label.split("_")[0] or "qZ" in label.split("_")[0]:
-        mg.GetXaxis().SetLimits(750,3000)
+        mg.GetXaxis().SetLimits(500,3000)
     else:
-        mg.GetXaxis().SetLimits(750,3000)
+        mg.GetXaxis().SetLimits(500,3150)
 
     # histo to shade
     n=len(fChain)
@@ -224,7 +142,7 @@ def Plot(files, label, obs):
         grgreen.SetPoint(i,radmasses[i],y2up[i])
         grgreen.SetPoint(n+i,radmasses[n-i-1],y2down[n-i-1])
 
-    grgreen.SetFillColor(rt.kGreen)
+    grgreen.SetFillColor(rt.kYellow)
     grgreen.Draw("f") 
 
 
@@ -233,67 +151,36 @@ def Plot(files, label, obs):
         gryellow.SetPoint(i,radmasses[i],y1up[i])
         gryellow.SetPoint(n+i,radmasses[n-i-1],y1down[n-i-1])
 
-    gryellow.SetFillColor(rt.kYellow)
+    gryellow.SetFillColor(rt.kGreen)
     gryellow.Draw("f,same") 
 
     grmean.Draw("L")
     if obs: grobs.Draw("L")
 
     gtheory = rt.TGraphErrors(1)
-    gtheory.SetLineColor(rt.kRed)
+    gtheory.SetLineColor(rt.kBlack)
     gtheory.SetLineWidth(4)
-    #ftheory=open("signal_cross_section_RS1Graviton.txt")
-    #ftheory=open("bulk_graviton_exo15002.txt")	
-    #ij=0
-    #glogtheory = rt.TGraphErrors(1)
-    #for lines in ftheory.readlines():
-    # for line in lines.split("\r"):
-    #    split=line.split(":")
-	#print(split[1][0:])
-    #    gtheory.SetPoint(ij, float(split[0][-4:])/1000., float(split[1]))
-    #    glogtheory.SetPoint(ij, float(split[0][-4:])/1000., log(float(split[1])))
-    #	ij+=1
-    #mg.Add(gtheory,"L")
-    #gtheory.Draw("L")
-    #ltheory="G_{RS1} #rightarrow HH (k/#bar{M}_{Pl}=0.1)"
-    #ltheory ="G_{Bulk} (ktild = 0.5)"	
-    
-   # crossing=0
-   # for mass in range(int(radmasses[0]*1000.),int(radmasses[-1]*1000.)):
-   #     if exp(glogtheory.Eval(mass/1000.))>grmean.Eval(mass/1000.) and crossing>=0:
-#	    print label,"exp crossing",mass
-#	    crossing=-1
-#        if exp(glogtheory.Eval(mass/1000.))<grmean.Eval(mass/1000.) and crossing<=0:
-#	    print label,"exp crossing",mass
-#	    crossing=1
-#    crossing=0
-#    for mass in range(int(radmasses[0]*1000.),int(radmasses[-1]*1000.)):
-#        if exp(glogtheory.Eval(mass/1000.))>grobs.Eval(mass/1000.) and crossing>=0:
-#	    print label,"obs crossing",mass
-#	    crossing=-1
-#        if exp(glogtheory.Eval(mass/1000.))<grobs.Eval(mass/1000.) and crossing<=0:
-	    #print label,"obs crossing",mass
-	    #crossing=1
-    
+
     if "WW" in label.split("_")[0] or "ZZ" in label.split("_")[0]:
-       leg = rt.TLegend(0.53,0.65,0.95,0.89)
+       leg = rt.TLegend(0.5,0.7,0.95,0.89)
        leg2 = rt.TLegend(0.33,0.55,0.95,0.89)
     else:
-       leg = rt.TLegend(0.59,0.65,0.95,0.89)
-       leg2 = rt.TLegend(0.49,0.55,0.95,0.89)
+        leg = rt.TLegend(0.5,0.65,0.95,0.89,"Z(q#bar{q})#gamma: #frac{#Gamma}{m}=1.4#times10^{-4}, J=0")
+        leg2 = rt.TLegend(0.49,0.55,0.95,0.89)
     leg.SetFillColor(rt.kWhite)
     leg.SetFillStyle(0)
     leg.SetTextSize(0.04)
-    leg.SetTextFont(42) 	
+    leg.SetTextFont(42)
     leg.SetBorderSize(0)
     leg2.SetFillColor(rt.kWhite)
     leg2.SetFillStyle(0)
     leg2.SetTextSize(0.04)
     leg2.SetBorderSize(0)
 
-    if obs: leg.AddEntry(grobs, "Observed", "L")
-    leg.AddEntry(gryellow, "Expected (68%)", "f")
-    leg.AddEntry(grgreen, "Expected (95%)", "f")
+    if obs: leg.AddEntry(grobs, "Observed limit", "L")
+    leg.AddEntry(grmean, "Expected limit", "L")
+    leg.AddEntry(gryellow, "Expected limit #pm 1#sigma", "f")
+    leg.AddEntry(grgreen, "Expected limit #pm 2#sigma", "f")
     #leg.AddEntry(gtheory, ltheory, "L")
 
     if obs: leg2.AddEntry(grobs, " ", "")
@@ -315,6 +202,8 @@ def Plot(files, label, obs):
     else:
         c1.SaveAs("brazilianFlag_%s_13TeV.root" %label)
         c1.SaveAs("brazilianFlag_%s_13TeV.pdf" %label)
+        grobs.SaveAs("brazilianFlag_observed_%s_13TeV.root" %label)
+        grmean.SaveAs("brazilianFlag_expected_%s_13TeV.root" %label)
 
 
 if __name__ == '__main__':
@@ -324,7 +213,12 @@ if __name__ == '__main__':
 
   for chan in channels:
     print "chan =",chan
-    masses =[750,1000,2000,3000]
+    imass=650
+    masses=[]
+    while imass < 3010:
+        masses.append(imass)
+        imass+=10
+    #masses =[650, 740, 745, 750, 755, 760, 765, 850, 1000, 1150, 1300, 1450, 1600, 1750, 1900, 2050, 2450, 3000, 3250]
 
     HPplots=[]
     LPplots=[]

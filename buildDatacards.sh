@@ -35,14 +35,14 @@ process               signal      background
 process               0           1
 rate                  ${sig_norm} 1
 cms_lumi_13TeV  lnN   1.027       -     
-cms_btag_sf_13TeV       lnN              0.833       -         
-cms_btag_sf_13TeV       lnN              1.2         -
+cms_btag_sf_13TeV       lnN              0.909       -         
+cms_btag_sf_13TeV       lnN              1.1         -
 cms_JES_13TeV           lnN              1.02        -         
-cms_phoHLT_13TeV        lnN              1.03        -         
-cms_pho_sf_13TeV        lnN              1.02        -         
-cms_pileup_13TeV        lnN              1.05        -         
-cms_xzg_pdf_13TeV       lnN              1.04        -         
-cms_xzg_scale_13TeV     lnN              1.06        -        
+cms_phoHLT_13TeV        lnN              1.02        -         
+cms_pho_sf_13TeV        lnN              1.05        -         
+cms_pileup_13TeV        lnN              1.01        -         
+cms_xzg_pdf_13TeV       lnN              1.02        -         
+cms_xzg_scale_13TeV     lnN              1.05        -        
 EOF
 
     
@@ -52,11 +52,12 @@ EOF
     if [[ $dcardName == *"anti"* ]]
     then
 	sed -i 's/WHATKIND/Anti/' ${dirName}/${dcardName}
-	sed -i '/cms_btag_sf_13TeV.*1\.2.*/d' ${dirName}/${dcardName}
+	sed -i '/cms_btag_sf_13TeV.*1\.1.*/d' ${dirName}/${dcardName}
 	grep 'bg_' ${dirName}/${bgLogName} | grep 'param' >> ${dirName}/${dcardName}
     else
 	sed -i 's/WHATKIND//' ${dirName}/${dcardName}
-	sed -i '/cms_btag_sf_13TeV.*0.833.*/d' ${dirName}/${dcardName}
+	sed -i '/cms_btag_sf_13TeV.*0.909.*/d' ${dirName}/${dcardName}
+        #grep 'bg_' ${dirName}/${bgLogName} | grep 'param' >> ${dirName}/${dcardName}
     fi
 
     cards+="${dirName}/${dcardName} "

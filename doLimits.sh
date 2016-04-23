@@ -31,8 +31,8 @@ done
 for m in ${masses[@]}
 do
     if [ $cleanUp -eq 0 ]; then
-        ./buildInputs.sh $rebin $m
-        ./buildDatacards.sh $m
+        ./buildInputs.sh $rebin $m 4
+        ./buildDatacards_alt.sh $m
         ./runLimits.sh $debug $m
     fi
     
