@@ -3,8 +3,7 @@ cleanUp=0
 rebin=10
 debug=0
 m=$1
-model=$2
 
-./buildInputs.sh $rebin $m $model
+./buildInputs.sh $rebin $m 0
 ./buildDatacards.sh $m
 ./runLimits.sh $debug $m

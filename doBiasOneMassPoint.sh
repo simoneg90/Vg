@@ -16,6 +16,6 @@ models=(
 
 echo "datacard_qqg_${m}_combined_alt.txt"
 
-combine datacard_qqg_${m}_combined_alt.txt -M GenerateOnly -m $m -t 10000  --saveToys -s 334455 --expectSignal=0 -n biasTest
-combine datacard_qqg_${m}_combined.txt -M MaxLikelihoodFit -m $m --expectSignal=0 --noErrors --minos none --rMin=-10 --rMax=10 -t 10000 --toysFile=higgsCombinebiasTest.GenerateOnly.mH${m}.334455.root -s 334455 -n output${m}
+combine datacard_qqg_${m}_combined_alt.txt -M GenerateOnly -m $m -t 1000  --saveToys -s 334455 --expectSignal=0 -n biasTest
+combine datacard_qqg_${m}_combined.txt -M MaxLikelihoodFit -m $m --expectSignal=0 --noErrors --minos none --rMin=-4 --rMax=4 -t 1000 --toysFile=higgsCombinebiasTest.GenerateOnly.mH${m}.334455.root -s 334455 -n output${m}
 

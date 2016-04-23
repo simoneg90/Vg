@@ -49,3 +49,22 @@ To run everything:
 ```
 ./doLimits.sh
 ```
+
+To do bias studies:
+1. edit BackgroundPrediction.c and set
+
+```
+bool bias = true;
+```
+
+2. Example how to run one mass point:
+```
+./doBiasOneMassPoint.sh 10<rebin> 750<mass> 4<model index>
+```
+
+To run one mass point:
+
+```
+./doOneMassPoint.sh 10<rebin> 750<mass>
+```
+
