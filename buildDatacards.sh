@@ -35,28 +35,29 @@ process               signal      background
 process               0           1
 rate                  ${sig_norm} 1
 cms_lumi_13TeV  lnN   1.027       -     
-cms_btag_sf_13TeV       lnN              0.909       -         
-cms_btag_sf_13TeV       lnN              1.1         -
+cms_btag_sf_13TeV       lnN              0.833       -         
+cms_btag_sf_13TeV       lnN              1.2         -
 cms_JES_13TeV           lnN              1.02        -         
 cms_phoHLT_13TeV        lnN              1.02        -         
 cms_pho_sf_13TeV        lnN              1.05        -         
 cms_pileup_13TeV        lnN              1.01        -         
 cms_xzg_pdf_13TeV       lnN              1.02        -         
-cms_xzg_scale_13TeV     lnN              1.05        -        
+cms_xzg_scale_13TeV     lnN              1.05        -       
 EOF
 
     
     #now add the systematics to the card
     #grep 'signal_' ${dirName}/index.html | awk '{print $1 " " $2 " " $3 " " $4}' >>  ${dirName}/${dcardName}
     #grep 'bg_' ${dirName}/${bgLogName} | grep 'param' >> ${dirName}/${dcardName}
+    grep 'bias_term_' ${dirName}/${bgLogName} | grep ' param ' >> ${dirName}/${dcardName}
     if [[ $dcardName == *"anti"* ]]
     then
 	sed -i 's/WHATKIND/Anti/' ${dirName}/${dcardName}
-	sed -i '/cms_btag_sf_13TeV.*1\.1.*/d' ${dirName}/${dcardName}
-	grep 'bg_' ${dirName}/${bgLogName} | grep 'param' >> ${dirName}/${dcardName}
+	sed -i '/cms_btag_sf_13TeV.*1\.2.*/d' ${dirName}/${dcardName}
+	grep 'bg_' ${dirName}/${bgLogName} | grep ' param ' >> ${dirName}/${dcardName}
     else
 	sed -i 's/WHATKIND//' ${dirName}/${dcardName}
-	sed -i '/cms_btag_sf_13TeV.*0.909.*/d' ${dirName}/${dcardName}
+	sed -i '/cms_btag_sf_13TeV.*0.833.*/d' ${dirName}/${dcardName}
         #grep 'bg_' ${dirName}/${bgLogName} | grep 'param' >> ${dirName}/${dcardName}
     fi
 
