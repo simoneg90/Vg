@@ -29,8 +29,8 @@
 using namespace RooFit;
 int iPeriod = 4;    // 1=7TeV, 2=8TeV, 3=7+8TeV, 7=7+8+13TeV
 int iPos =11;
-bool bias= false;
-bool blind = false;
+bool bias= true;
+bool blind = true;
 double H_mass=125.0;
 double mH_diff_cut=40.;
 double mH_mean_cut=20.;
@@ -148,12 +148,12 @@ void BackgroundPrediction(std::string pname,int rebin_factor,int model_number = 
 {
     rebin = rebin_factor;
     //std::string fname = std::string("../fitFilesBtagSF/") + pname + std::string("/histos_bkg.root");
-    std::string fname = std::string("../GenSignal/") + pname + std::string("/histos_bkg.root");
+    std::string fname = std::string("../fitFilesMETPT34/") + pname + std::string("/histos_bkg.root");
     
     stringstream iimass ;
     iimass << imass;
     std::string dirName = "info_"+iimass.str()+"_"+pname;
-
+    
     
     gStyle->SetOptStat(000000000);
     gStyle->SetPadGridX(0);
@@ -198,6 +198,16 @@ void BackgroundPrediction(std::string pname,int rebin_factor,int model_number = 
     h_SR_Prediction->Sumw2();
     
     
+    
+    TFile *f_sig = new TFile((dirName+"/w_signal_"+iimass.str()+".root").c_str());
+    RooWorkspace* xf_sig = (RooWorkspace*)f_sig->Get("Vg");
+    RooAbsPdf *xf_sig_pdf = (RooAbsPdf *)xf_sig->pdf((std::string("signal_fixed_")+pname).c_str());
+   
+    RooWorkspace w_sig("w");
+    w_sig.import(*xf_sig_pdf,RooFit::RenameVariable((std::string("signal_fixed_")+pname).c_str(),(std::string("signal_fixed_")+pname+std::string("low")).c_str()),RooFit::RenameAllVariablesExcept("low","x"));
+    xf_sig_pdf = w_sig.pdf((std::string("signal_fixed_")+pname+std::string("low")).c_str());
+    
+    
     RooRealVar x("x", "m_{X} (GeV)", SR_lo, SR_hi);
     
     RooRealVar nBackground((std::string("bg_")+pname+std::string("_norm")).c_str(),"nbkg",h_mX_SR->GetSumOfWeights());
@@ -206,30 +216,52 @@ void BackgroundPrediction(std::string pname,int rebin_factor,int model_number = 
     pname=""; //Antibtag=tag to constrain b-tag to the anti-btag shape
     
     
-/*    RooRealVar bg_p0((std::string("bg_p0_")+pname).c_str(), "bg_p0", 4.2, 0, 200.);
-    RooRealVar bg_p1((std::string("bg_p1_")+pname).c_str(), "bg_p1", 4.5, 0, 300.);
-    RooRealVar bg_p2((std::string("bg_p2_")+pname).c_str(), "bg_p2", 0.000047, 0, 10.1);
-    RooGenericPdf bg = RooGenericPdf((std::string("bg_")+blah).c_str(),"(pow(1-@0/13000,@1)/pow(@0/13000,@2+@3*log(@0/13000)))",RooArgList(x,bg_p0,bg_p1,bg_p2));*/
-
+    /*    RooRealVar bg_p0((std::string("bg_p0_")+pname).c_str(), "bg_p0", 4.2, 0, 200.);
+     RooRealVar bg_p1((std::string("bg_p1_")+pname).c_str(), "bg_p1", 4.5, 0, 300.);
+     RooRealVar bg_p2((std::string("bg_p2_")+pname).c_str(), "bg_p2", 0.000047, 0, 10.1);
+     RooGenericPdf bg = RooGenericPdf((std::string("bg_")+blah).c_str(),"(pow(1-@0/13000,@1)/pow(@0/13000,@2+@3*log(@0/13000)))",RooArgList(x,bg_p0,bg_p1,bg_p2));*/
+    
     RooRealVar bg_p0((std::string("bg_p0_")+pname).c_str(), "bg_p0", 0., -1000, 200.);
     RooRealVar bg_p1((std::string("bg_p1_")+pname).c_str(), "bg_p1", -13, -1000, 1000.);
     RooRealVar bg_p2((std::string("bg_p2_")+pname).c_str(), "bg_p2", -1.4, -1000, 1000);
     bg_p0.setConstant(kTRUE);
+    RooGenericPdf bg_pure = RooGenericPdf((std::string("bg_pure_")+blah).c_str(),"(pow(@0/13000,@1+@2*log(@0/13000)))",RooArgList(x,bg_p1,bg_p2));
     
-    RooGenericPdf bg = RooGenericPdf((std::string("bg_")+blah).c_str(),"(pow(@0/13000,@1+@2*log(@0/13000)))",RooArgList(x,bg_p1,bg_p2));
+    
+    RooRealVar bias_term((std::string("bias_term_")+blah).c_str(), "bias_term", 0., -1, 1);
+    //RooRealVar bias_term((std::string("bias_term_")+pname).c_str(), "bias_term", 0., -1, 1);
+    bias_term.setConstant(kTRUE);
+    
+    //TF1* biasFunc = new TF1("biasFunc","-175.257+0.280397*x-0.00014406*x*x+2.40451*x*x*x/100000000",1350,2350);
+    TF1* biasFunc = new TF1("biasFunc","exp(4.72-1.3*x/1000.)/4.",1350,2350);
+    //TF1* biasFunc = new TF1("biasFunc","1",1350,2350);
+    double yields[2] = {2318, 43};
+    double bias_term_s = 0;
+    if (imass > 1350 && imass < 2350) {
+        bias_term_s = 2.7*biasFunc->Eval(imass);
+        if (blah == "antibtag")
+            bias_term_s/=2318.;
+        else
+            bias_term_s/=43.;
+    }
 
+    RooAddPdf bg((std::string("bg_")+blah).c_str(), "bg_all", RooArgList(*xf_sig_pdf, bg_pure), bias_term);
+
+    
     string name_output = "CR_RooFit_Exp";
     
     
     RooDataHist pred("pred", "Prediction from SB", RooArgList(x), h_SR_Prediction);
-    //RooFitResult *r_bg=bg.fitTo(pred, RooFit::Minimizer("Minuit2"), RooFit::Range(SR_lo, SR_hi), RooFit::SumW2Error(kTRUE), RooFit::Save());
-    RooFitResult *r_bg=bg.fitTo(pred, RooFit::Range(SR_lo, SR_hi), RooFit::Save());
-
+    RooFitResult *r_bg=bg.fitTo(pred, RooFit::Minimizer("Minuit2"), RooFit::Range(SR_lo, SR_hi), RooFit::SumW2Error(kTRUE), RooFit::Save());
+    //RooFitResult *r_bg=bg.fitTo(pred, RooFit::Range(SR_lo, SR_hi), RooFit::Save());
+    //RooFitResult *r_bg=bg.fitTo(pred, RooFit::Range(SR_lo, SR_hi), RooFit::Save(),RooFit::SumW2Error(kTRUE));
+    //RooDataHist  data_=*(bg.generateBinned(x, h_mMMMMa_3Tag_SR_Prediction->Integral(h_mMMMMa_3Tag_SR_Prediction->FindBin(SR_lo), h_mX_SR->FindBin(SR_hi)-1) , RooAbsData::Poisson));
     std::cout<<" --------------------- Building Envelope --------------------- "<<std::endl;
     //std::cout<< "bg_p0_"<< pname << "   param   "<<bg_p0.getVal() <<  " "<<bg_p0.getError()<<std::endl;
     std::cout<< "bg_p1_"<< pname << "   param   "<<bg_p1.getVal() <<  " "<<bg_p1.getError()<<std::endl;
     std::cout<< "bg_p2_"<< pname << "   param   "<<bg_p2.getVal() <<  " "<<bg_p2.getError()<<std::endl;
-    
+    std::cout<< "bias_term_"<< blah << "   param   0 "<<bias_term_s<<std::endl;
+    //std::cout<< "bias_term_"<< pname << "   param   0 "<<bias_term_s<<std::endl;   
     RooPlot *aC_plot=x.frame();
     pred.plotOn(aC_plot, RooFit::MarkerColor(kPink+2));
     bg.plotOn(aC_plot, RooFit::VisualizeError(*r_bg, 1), RooFit::FillColor(kGray+1), RooFit::FillStyle(3001));
@@ -377,8 +409,6 @@ void BackgroundPrediction(std::string pname,int rebin_factor,int model_number = 
         gSystem->Load("libHiggsAnalysisCombinedLimit");
         gSystem->Load("libdiphotonsUtils");
         
-        
-        
         TFile *f = new TFile("antibtag_multipdf.root");
         RooWorkspace* xf = (RooWorkspace*)f->Get("wtemplates");
         RooWorkspace *w_alt=new RooWorkspace("Vg");
@@ -418,6 +448,7 @@ void BackgroundPrediction(std::string pname,int rebin_factor,int model_number = 
         for (int i=0; i!=nPars[model_number]; ++i) {
             std::cout<<parNames[model_number][i]<<" param "<< w_alt->var(parNames[model_number][i])->getVal()<<"   "<<w_alt->var(parNames[model_number][i])->getError()<<std::endl;
         }
+        
         
     } else {
         p_1->SetLogy();
