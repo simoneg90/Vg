@@ -29,8 +29,8 @@
 using namespace RooFit;
 int iPeriod = 4;    // 1=7TeV, 2=8TeV, 3=7+8TeV, 7=7+8+13TeV
 int iPos =11;
-bool bias= true;
-bool blind = true;
+bool bias= false;
+bool blind = false;
 double H_mass=125.0;
 double mH_diff_cut=40.;
 double mH_mean_cut=20.;
@@ -66,7 +66,7 @@ std::string itoa(int i)
 TCanvas* comparePlots2(RooPlot *plot_bC, RooPlot *plot_bS, TH1F *data, TH1F *qcd, std::string title)
 {
     
-    RooRealVar x("x", "m_{X} (GeV)", SR_lo, SR_hi);
+    RooRealVar x("x", "M_{Z#gamma} [GeV]", SR_lo, SR_hi);
     TCanvas *c=new TCanvas(("c_RooFit_"+title).c_str(), "c", 700, 700);
     TPad *p_1=new TPad("p_1", "p_1", 0, 0.35, 1, 1);
     gStyle->SetPadGridX(0);
@@ -90,7 +90,7 @@ TCanvas* comparePlots2(RooPlot *plot_bC, RooPlot *plot_bS, TH1F *data, TH1F *qcd
     double maxqcd=qcd->GetMaximum();
     double maxy=(maxdata>maxqcd) ? maxdata : maxqcd;
     
-    title=";m_{X} (GeV); Events / "+itoa(data->GetBinWidth(1))+" GeV";
+    title=";M_{Z#gamma} [GeV]; Events / "+itoa(data->GetBinWidth(1))+" GeV";
     p_1->DrawFrame(SR_lo, 0, SR_hi, maxy*1., title.c_str());
     plot_bS->SetMarkerStyle(20);
     plot_bS->Draw("same");
@@ -199,7 +199,7 @@ void BackgroundPrediction(std::string pname,int rebin_factor,int model_number = 
     
     
     
-    TFile *f_sig = new TFile((dirName+"/w_signal_"+iimass.str()+".root").c_str());
+    /*TFile *f_sig = new TFile((dirName+"/w_signal_"+iimass.str()+".root").c_str());
     RooWorkspace* xf_sig = (RooWorkspace*)f_sig->Get("Vg");
     RooAbsPdf *xf_sig_pdf = (RooAbsPdf *)xf_sig->pdf((std::string("signal_fixed_")+pname).c_str());
    
@@ -207,8 +207,8 @@ void BackgroundPrediction(std::string pname,int rebin_factor,int model_number = 
     w_sig.import(*xf_sig_pdf,RooFit::RenameVariable((std::string("signal_fixed_")+pname).c_str(),(std::string("signal_fixed_")+pname+std::string("low")).c_str()),RooFit::RenameAllVariablesExcept("low","x"));
     xf_sig_pdf = w_sig.pdf((std::string("signal_fixed_")+pname+std::string("low")).c_str());
     
-    
-    RooRealVar x("x", "m_{X} (GeV)", SR_lo, SR_hi);
+    */
+    RooRealVar x("x", "M_{Z#gamma} [GeV]", SR_lo, SR_hi);
     
     RooRealVar nBackground((std::string("bg_")+pname+std::string("_norm")).c_str(),"nbkg",h_mX_SR->GetSumOfWeights());
     RooRealVar nBackground2((std::string("alt_bg_")+pname+std::string("_norm")).c_str(),"nbkg",h_mX_SR->GetSumOfWeights());
@@ -225,8 +225,10 @@ void BackgroundPrediction(std::string pname,int rebin_factor,int model_number = 
     RooRealVar bg_p1((std::string("bg_p1_")+pname).c_str(), "bg_p1", -13, -1000, 1000.);
     RooRealVar bg_p2((std::string("bg_p2_")+pname).c_str(), "bg_p2", -1.4, -1000, 1000);
     bg_p0.setConstant(kTRUE);
-    RooGenericPdf bg_pure = RooGenericPdf((std::string("bg_pure_")+blah).c_str(),"(pow(@0/13000,@1+@2*log(@0/13000)))",RooArgList(x,bg_p1,bg_p2));
-    
+    //RooGenericPdf bg_pure = RooGenericPdf((std::string("bg_pure_")+blah).c_str(),"(pow(@0/13000,@1+@2*log(@0/13000)))",RooArgList(x,bg_p1,bg_p2));
+
+    RooGenericPdf bg = RooGenericPdf((std::string("bg_pure_")+blah).c_str(),"(pow(@0/13000,@1+@2*log(@0/13000)))",RooArgList(x,bg_p1,bg_p2));
+
     
     RooRealVar bias_term((std::string("bias_term_")+blah).c_str(), "bias_term", 0., -1, 1);
     //RooRealVar bias_term((std::string("bias_term_")+pname).c_str(), "bias_term", 0., -1, 1);
@@ -245,7 +247,7 @@ void BackgroundPrediction(std::string pname,int rebin_factor,int model_number = 
             bias_term_s/=43.;
     }
 
-    RooAddPdf bg((std::string("bg_")+blah).c_str(), "bg_all", RooArgList(*xf_sig_pdf, bg_pure), bias_term);
+    //RooAddPdf bg((std::string("bg_")+blah).c_str(), "bg_all", RooArgList(*xf_sig_pdf, bg_pure), bias_term);
 
     
     string name_output = "CR_RooFit_Exp";
@@ -264,11 +266,65 @@ void BackgroundPrediction(std::string pname,int rebin_factor,int model_number = 
     //std::cout<< "bias_term_"<< pname << "   param   0 "<<bias_term_s<<std::endl;   
     RooPlot *aC_plot=x.frame();
     pred.plotOn(aC_plot, RooFit::MarkerColor(kPink+2));
-    bg.plotOn(aC_plot, RooFit::VisualizeError(*r_bg, 1), RooFit::FillColor(kGray+1), RooFit::FillStyle(3001));
-    bg.plotOn(aC_plot, RooFit::LineColor(kBlack));
+    bg.plotOn(aC_plot, RooFit::VisualizeError(*r_bg, 2), RooFit::FillColor(kYellow));
+    bg.plotOn(aC_plot, RooFit::VisualizeError(*r_bg, 1), RooFit::FillColor(kGreen));
+    bg.plotOn(aC_plot, RooFit::LineColor(kBlue));
     pred.plotOn(aC_plot, RooFit::LineColor(kBlack), RooFit::MarkerColor(kBlack));
     
+    TGraph* error_curve[3];
+    
+    for (int i=0; i!=3; ++i) {
+        error_curve[i] = new TGraph();
+    }
+    
+    error_curve[0] = (TGraph*)aC_plot->getObject(1)->Clone("errs2");
+    error_curve[1] = (TGraph*)aC_plot->getObject(2)->Clone("errs1");
+    error_curve[2] = (TGraph*)aC_plot->getObject(3)->Clone("errs");
+    
+    error_curve[0]->SetFillStyle(1001);
+    error_curve[1]->SetFillStyle(1001);
+    
+    error_curve[0]->SetFillColor(kYellow);
+    error_curve[1]->SetFillColor(kGreen);
+    
+    error_curve[0]->SetLineColor(kYellow);
+    error_curve[1]->SetLineColor(kGreen);
+    
+    error_curve[2]->SetLineColor(kBlue);
+    error_curve[2]->SetLineWidth(3);
+    
+    int nPoints = error_curve[2]->GetN();
+    
+    for (int i=0; i!=nPoints; ++i) {
+        double x0,y0, x1,y1;
+        error_curve[2]->GetPoint(i,x0,y0);
+        error_curve[0]->GetPoint(i,x1,y1);
+        //error_curve[0]->SetPoint(i,x1,y1/y0-1);
+        error_curve[0]->SetPoint(i,x1,(y1-y0)/sqrt(y0));
+        
+        std::cout<<x0<<" "<<y0<<"; "<<x1<<" "<<y1<<std::endl;
+        
+        error_curve[0]->GetPoint(2*nPoints-i-1,x1,y1);
+        //error_curve[0]->SetPoint(2*nPoints-i-1,x1,y1/y0-1);
+        error_curve[0]->SetPoint(2*nPoints-i-1,x1,(y1-y0)/sqrt(y0));
+        
+        //std::cout<<x<<" "<<y<<"; "<<x1<<" "<<y1<<std::endl;
+        
+        error_curve[1]->GetPoint(i,x1,y1);
+        //error_curve[1]->SetPoint(i,x1,y1/y0-1);
+        error_curve[1]->SetPoint(i,x1,(y1-y0)/sqrt(y0));
+        error_curve[1]->GetPoint(2*nPoints-i-1,x1,y1);
+        //error_curve[1]->SetPoint(2*nPoints-i-1,x1,y1/y0-1);
+        error_curve[1]->SetPoint(2*nPoints-i-1,x1,(y1-y0)/sqrt(y0));
+    }
+    
     double xPad = 0.3;
+    double xG[2] = {-10,4000};
+    double yG[2] = {0.0,0.0};
+    TGraph* unityG = new TGraph(2, xG, yG);
+    unityG->SetLineColor(kBlue);
+    unityG->SetLineWidth(1);
+    
     TCanvas *c_rooFit=new TCanvas("c_rooFit", "c_rooFit", 800*(1.-xPad), 600);
     c_rooFit->SetFillStyle(4000);
     c_rooFit->SetFrameFillColor(0);
@@ -276,7 +332,7 @@ void BackgroundPrediction(std::string pname,int rebin_factor,int model_number = 
     TPad *p_1=new TPad("p_1", "p_1", 0, xPad, 1, 1);
     p_1->SetFillStyle(4000);
     p_1->SetFrameFillColor(0);
-    p_1->SetBottomMargin(0.02);
+    p_1->SetBottomMargin(0.03);
     TPad* p_2 = new TPad("p_2", "p_2",0,0,1,xPad);
     p_2->SetBottomMargin((1.-xPad)/xPad*0.13);
     p_2->SetTopMargin(0.03);
@@ -299,12 +355,12 @@ void BackgroundPrediction(std::string pname,int rebin_factor,int model_number = 
     
     
     aC_plot->GetXaxis()->SetRangeUser(SR_lo, SR_hi);
-    aC_plot->GetXaxis()->SetLabelOffset(0.03);
-    aC_plot->GetYaxis()->SetRangeUser(0.3, 500.);
+    aC_plot->GetXaxis()->SetLabelOffset(0.04);
+    aC_plot->GetYaxis()->SetRangeUser(0.1, 1000.);
     h_SR_Prediction->GetXaxis()->SetRangeUser(SR_lo, SR_hi);
     string rebin_ = itoa(rebin);
     
-    aC_plot->GetXaxis()->SetTitle("m_{X} (GeV) ");
+    aC_plot->GetXaxis()->SetTitle("M_{Z#gamma} [GeV] ");
     aC_plot->GetYaxis()->SetTitle(("Events / "+rebin_+" GeV ").c_str());
     aC_plot->SetMarkerSize(0.7);
     //aC_plot->GetYaxis()->SetLabelSize(0.03);
@@ -314,7 +370,7 @@ void BackgroundPrediction(std::string pname,int rebin_factor,int model_number = 
     
     
     aC_plot->SetTitle("");
-    TPaveText *pave = new TPaveText(0.85,0.4,0.67,0.5,"NDC");
+    TPaveText *pave = new TPaveText(0.88,0.6,0.58,0.68,"NDC");
     //TLegend *leg = new TLegend(0.85625,0.7721654,0.6765625,0.8903839,NULL,"brNDC");`
     pave->SetBorderSize(0);
     pave->SetTextSize(0.05);
@@ -327,9 +383,9 @@ void BackgroundPrediction(std::string pname,int rebin_factor,int model_number = 
     char name[1000];
     sprintf(name,"#chi^{2}/n = %.2f",aC_plot->chiSquare());
     pave->AddText(name);
-    pave->Draw();
+    //pave->Draw();
     
-    TLegend *leg = new TLegend(0.35,0.55,0.85,0.90,NULL,"brNDC");
+    TLegend *leg = new TLegend(0.88,0.65,0.55,0.90,NULL,"brNDC");
     leg->SetBorderSize(0);
     leg->SetTextSize(0.05);
     leg->SetTextFont(42);
@@ -342,11 +398,27 @@ void BackgroundPrediction(std::string pname,int rebin_factor,int model_number = 
     h_SR_Prediction->SetLineColor(kBlack);
     h_SR_Prediction->SetMarkerStyle(20);
     //h_mMMMMa_3Tag_SR->GetXaxis()->SetTitleSize(0.09);
-    leg->AddEntry(h_SR_Prediction, "Data: sideband", "lep");
+    if (blind)
+        leg->AddEntry(h_SR_Prediction, "Data: sideband", "ep");
+    else {
+        if (blah == "antibtag" )
+            leg->AddEntry(h_SR_Prediction, "Data: anti-b-tag SR", "ep");
+        else
+            leg->AddEntry(h_SR_Prediction, "Data: b-tag SR", "ep");
+
+    }
+    
+    leg->AddEntry(error_curve[2], "Fit model", "l");
+    leg->AddEntry(error_curve[1], "Fit #pm1#sigma", "f");
+    leg->AddEntry(error_curve[0], "Fit #pm2#sigma", "f");
+    leg->Draw();
+    
     TH1F *h=new TH1F();
     h->SetLineColor(kRed);
     h->SetLineWidth(3);
-    leg->Draw();
+    
+    p_1->SetLogy();
+
     
     CMS_lumi( p_1, iPeriod, iPos );
     
@@ -360,10 +432,10 @@ void BackgroundPrediction(std::string pname,int rebin_factor,int model_number = 
     frameP->addPlotable(hpull,"P");
     frameP->GetYaxis()->SetRangeUser(-7,7);
     frameP->GetYaxis()->SetNdivisions(505);
-    frameP->GetYaxis()->SetTitle("Pull");
+    frameP->GetYaxis()->SetTitle("#frac{(data-fit)}{#sigma_{stat}}");
     
     frameP->GetYaxis()->SetTitleSize((1.-xPad)/xPad*0.06);
-    frameP->GetYaxis()->SetTitleOffset(1.2/((1.-xPad)/xPad));
+    frameP->GetYaxis()->SetTitleOffset(1.0/((1.-xPad)/xPad));
     frameP->GetXaxis()->SetTitleSize((1.-xPad)/xPad*0.06);
     //frameP->GetXaxis()->SetTitleOffset(1.0);
     frameP->GetXaxis()->SetLabelSize((1.-xPad)/xPad*0.05);
@@ -371,7 +443,8 @@ void BackgroundPrediction(std::string pname,int rebin_factor,int model_number = 
     
     
     frameP->Draw();
-    
+    unityG->Draw("same");
+
     
     c_rooFit->SaveAs((dirName+"/"+name_output+".pdf").c_str());
     
@@ -402,7 +475,7 @@ void BackgroundPrediction(std::string pname,int rebin_factor,int model_number = 
         "env_pdf_0_13TeV_atlas1_coeff1","env_pdf_0_13TeV_atlas1_log1","",
         "env_pdf_0_13TeV_atlas2_coeff1","env_pdf_0_13TeV_atlas2_log1","env_pdf_0_13TeV_atlas2_log2",
         "env_pdf_0_13TeV_vvdijet1_coeff1","env_pdf_0_13TeV_vvdijet1_log1",""
-    }
+    };
     
     if(bias){
         //alternative model
@@ -456,6 +529,8 @@ void BackgroundPrediction(std::string pname,int rebin_factor,int model_number = 
         c_rooFit->SaveAs((dirName+"/"+name_output+"_log.pdf").c_str());
     }
     
+     
+     
     RooWorkspace *w=new RooWorkspace("Vg");
     w->import(bg);
     w->import(nBackground);
