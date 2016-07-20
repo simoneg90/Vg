@@ -1,0 +1,1 @@
+for FILE in `lcg-ls --verbose --vo=cms -b -D srmv2 --srm-timeout 2400 --sendreceive-timeout 2400 --connect-timeout 300 "srm://srm.ihepa.ufl.edu:8443/srm/v2/server?SFN=/cms/data/store/user/lshchuts/ZGamma16/loose/" | grep small3_ | sed 's@/cms/data@@g'`; do xrdcp root://cmsio6.rc.ufl.edu:1094//$FILE .; done
