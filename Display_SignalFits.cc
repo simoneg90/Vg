@@ -25,7 +25,7 @@
 #include <fstream>
 #include <algorithm>
 #include "CMS_lumi.C"
-#include "tdrstyle.C"
+//#include "tdrstyle.C"
 
 //#include "RooRealVar.h"
 //#include "RooArgList.h"
@@ -171,7 +171,7 @@ int Display_SignalFits(std::string postfix,
     
     writeExtraText = true;       // if extra text
     extraText  = "Simulation";  // default extra text is "Preliminary"
-    lumi_13TeV  = "2.7 fb^{-1}"; // default is "19.7 fb^{-1}"
+    lumi_13TeV  = "7.7 fb^{-1}"; // default is "19.7 fb^{-1}"
     
     rebin = rebin_factor;
     
@@ -194,7 +194,7 @@ int Display_SignalFits(std::string postfix,
     setTDRStyle();
     
     // Calculate nSignal events given production cross section, branching fractions and efficiency
-    double totalLumi=2.690; // /fb
+    double totalLumi=7.7; // /fb
     double prodXsec_1=1.; // fb
     
     // Interpolation Plots

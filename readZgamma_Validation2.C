@@ -15,7 +15,7 @@
 #include "vector"
 #include "map"
 
-#include "tdrstyle.C"
+//#include "tdrstyle.C"  //already in my $HOME 
 #include "CMS_lumi.C"
 //#include "pu_weights.h"
 
@@ -660,7 +660,7 @@ void readZgamma_Validation2() {
     // Set branch addresses and branch pointers
     int cont =0;
     
-    const int nFiles = 22;
+    const int nFiles = 20;  //from 22, problems with 2 files...
     const int nProcess = 12;
     const int iSM = 4;
     
@@ -719,8 +719,8 @@ void readZgamma_Validation2() {
         "signal-W_0-p-014-3250.root", //3
         "GJets_HT-100To200.root", //4
         "GJets_HT-200To400.root", //5
-        "GJets_HT-400To600.root", //6
-        "GJets_HT-600ToInf.root", //7
+     //   "GJets_HT-400To600.root", //6
+     //   "GJets_HT-600ToInf.root", //7
         "QCD_HT100to200.root", //8
         "QCD_HT200to300.root", //9
         "QCD_HT300to500.root", //10
@@ -745,8 +745,8 @@ void readZgamma_Validation2() {
         0.7,
         5000,
         1079,
-        125.9,
-        43.36,
+    //    125.9,
+    //    43.36,
         27990000,
         1712000,
         347700,
@@ -770,8 +770,8 @@ void readZgamma_Validation2() {
         3,
         4,
         4,
-        4,
-        4,
+    //    4,
+    //    4,
         5,
         5,
         5,
@@ -788,7 +788,7 @@ void readZgamma_Validation2() {
         11
     };
     
-    TFile* puwFile = new TFile("puWeights_7fb.root");
+    TFile* puwFile = new TFile("puw_2016_26fb.root");
     TH1D* puw = (TH1D*)puwFile->Get("puw");
     
     /*TFile* kFactFile = new TFile("uncertainties_EWK_24bins.root");
@@ -836,7 +836,7 @@ void readZgamma_Validation2() {
 
     TFile* hfile[nFiles];
     TTree* inputTreeFake[nFiles];
-    
+    TString prefix="/t3/users/gellisim/lesyaFiles/"; 
     TH1D* distribs[nProcess+2][nVars];
 
     for (int sam=0; sam!=nProcess+2; ++sam) for (int i=0; i!=nVars; ++i)  {
@@ -884,11 +884,11 @@ void readZgamma_Validation2() {
         if (kSam == iSM+4 || kSam == iSM+5 ) continue;
         
         if (kSam >=iSM) {
-            if (gSystem->AccessPathName("loose/small3_"+fileList[kSam])) continue;
-            hfile[kSam]=new TFile("loose/small3_"+fileList[kSam],"READ");
+            if (gSystem->AccessPathName(prefix+"loose/small3_"+fileList[kSam])) continue;
+            hfile[kSam]=new TFile(prefix+"loose/small3_"+fileList[kSam],"READ");
         } else {
-            if (gSystem->AccessPathName(""+fileList[kSam])) continue;
-            hfile[kSam]=new TFile(""+fileList[kSam],"READ");
+            if (gSystem->AccessPathName(""+prefix+fileList[kSam])) continue;
+            hfile[kSam]=new TFile(""+prefix+fileList[kSam],"READ");
         }
         hfile[kSam]->cd("ntuplizer");
         inputTreeFake[kSam] = static_cast<TTree*>(hfile[kSam]->Get("ntuplizer/tree"));

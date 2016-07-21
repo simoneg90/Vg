@@ -15,14 +15,13 @@
 #include "vector"
 #include "map"
 
-//#include "tdrstyle.C"
-//#include "/cmshome/gellisim/setTDRStyle.C"
+//#include "tdrstyle.C"  //already in my $HOME
 #include "CMS_lumi.C"
 //#include "pu_weights.h"
 
 
 
-const double intlumi = 7600;
+const double intlumi = 7.;//10000;
 int iPeriod = 4;    // 1=7TeV, 2=8TeV, 3=7+8TeV, 7=7+8+13TeV
 int iPos =0;
 
@@ -47,15 +46,15 @@ float varUp[nVars] = {
 };
 
 float varDown[nVars] = {
-    0,200,200,-2.4,-2.4,
+    0,180,200,-2.4,-2.4,
     0,0,0,0,0,
     0,0,0,0,0,
     0,0,-1,0
 };
 int nBinsVars[nVars] = {
-    20,13,18,48,48,
+    20,66,90,48,48,
     40,40,50,30,48,
-    80,16,40,100,100,
+    4000,16,40,100,100, //80
     50,100,25,50
 };
 
@@ -74,13 +73,13 @@ TString varsPlots[nVars] = {
 
 
 
-void readZgamma_reweight() {
+void readZgamma_fullSelMC() {
     setTDRStyle();
     gStyle->SetOptStat(0);
     
     writeExtraText = true;       // if extra text
-    extraText  = "Preliminary";  // default extra text is "Preliminary"
-    lumi_13TeV  = "7.6 fb^{-1} (2016)"; // default is "19.7 fb^{-1}"
+    extraText  = "Simulation";  // default extra text is "Preliminary"
+    lumi_13TeV  = "10.0 fb^{-1}"; // default is "19.7 fb^{-1}"
 
     
     // Fixed size dimensions of array or collections stored in the TTree if any.
@@ -653,7 +652,7 @@ void readZgamma_reweight() {
     PV_z = 0;
     // Set branch addresses and branch pointers
     
-    const int nFiles = 17;  //changed from 19 -> Problem reading GJets_400-600 & 600-Inf
+    const int nFiles = 17;
     const int nProcess = 9;
     const int iSM = 4;
     
@@ -662,6 +661,11 @@ void readZgamma_reweight() {
         kRed-3,
         kGreen-3,
         kViolet+2, kMagenta-7, 1, 1, 1
+        //kRed,
+        //kYellow, kCyan, kOrange-3, kBlue,
+        //kRed-3,
+        //kGreen-3,
+        //kViolet+2, kMagenta-7, 1, 1, 1
     };
     
     /*TString sampleString[nFiles] = {
@@ -686,91 +690,92 @@ void readZgamma_reweight() {
         "data"
     };*/
     
+
     TString sampleString[nProcess] = {
-        "M(765)",
-        "M(1300)",
-        "M(1900)",
-        "M(3250)",
-        "#gamma+jets",
-        "QCD",
-        "W+jets[180,#infty]",
-        "DY+jets[180,#infty]",
-        "data"
+       "M(765)",
+       "M(1300)",
+       "M(1900)",
+       "M(3250)",
+       "#gamma+jets",
+       "QCD",
+       "W+jets[180,#infty]",
+       "DY+jets[180,#infty]",
+       "data"
     };
-    
-    TString fileList[nFiles] = {
-        //"flatTuple_M-750.root",
-        //"flatTuple_M-2000.root",
-        "signal-W_0-p-014-765.root", //0
-        "signal-W_0-p-014-1300.root", //1
-        "signal-W_0-p-014-1900.root", //2
-        "signal-W_0-p-014-3250.root", //3
-        "GJets_HT-100To200.root", //4
-        "GJets_HT-200To400.root", //5
-    //    "GJets_HT-400To600.root", //6
-    //    "GJets_HT-600ToInf.root", //7
-        "QCD_HT100to200.root", //8
-        "QCD_HT200to300.root", //9
-        "QCD_HT300to500.root", //10
-        "QCD_HT500to700.root", //11
-        "QCD_HT700to1000.root", //12
-        "QCD_HT1000to1500.root", //13
-        "QCD_HT1500to2000.root", //14
-        "QCD_HT2000toInf.root", //15
-        "WJetsToQQ_HT180.root",//16
-        "DYJetsToQQ_HT180.root",
-        "data_77.root"
-    };
-    
-    
-    const double xsec[nFiles] = {
-        0.7,
-        0.7,
-        0.7,
-        0.7,
-        5000,
-        1079,
-   //     125.9,
-   //     43.36,
-        27990000,
-        1712000,
-        347700,
-        32100,
-        6831,
-        1207,
-        119.9,
-        25.24,
-        2788,
-        1187,
-        1
-    };
-    
+
+   TString fileList[nFiles] = {
+      //"flatTuple_M-750.root",
+      //"flatTuple_M-2000.root",
+      "signal-W_0-p-014-765.root", //0
+      "signal-W_0-p-014-1300.root", //1
+      "signal-W_0-p-014-1900.root", //2
+      "signal-W_0-p-014-3250.root", //3
+      "GJets_HT-100To200.root", //4
+      "GJets_HT-200To400.root", //5
+      //    "GJets_HT-400To600.root", //6
+      //    "GJets_HT-600ToInf.root", //7
+      "QCD_HT100to200.root", //8
+      "QCD_HT200to300.root", //9
+      "QCD_HT300to500.root", //10
+      "QCD_HT500to700.root", //11
+      "QCD_HT700to1000.root", //12
+      "QCD_HT1000to1500.root", //13
+      "QCD_HT1500to2000.root", //14
+      "QCD_HT2000toInf.root", //15
+      "WJetsToQQ_HT180.root",//16
+      "DYJetsToQQ_HT180.root",
+      "data_77.root"
+  };
+
+   const double xsec[nFiles] = {
+      0.7,
+      0.7,
+      0.7,
+      0.7,
+      5000,
+      1079,
+      //     125.9,
+      //     43.36,
+      27990000,
+      1712000,
+      347700,
+      32100,
+      6831,
+      1207,
+      119.9,
+      25.24,
+      2788,
+      1187,
+      1
+   };
+
     int grouping[nFiles] = {
-        0,
-        1,
-        2,
-        3,
-        4,
-        4,
-    //    4,
-    //    4,
-        5,
-        5,
-        5,
-        5,
-        5,
-        5,
-        5,
-        5,
-        6,
-        7,
-        8
-    };
-    
-    TFile* puwFile = new TFile("../puw_2016_26fb.root");//"puWeights_7fb.root");
+             0,
+             1,
+             2,
+             3,
+             4,
+             4,
+       //    4,
+         //    4,
+             5,
+             5,
+             5,
+             5,
+             5,
+             5,
+             5,
+             5,
+             6,
+             7,
+             8
+  };
+
+
+    TFile* puwFile = new TFile("puw_2016_26fb.root");
     TH1D* puw = (TH1D*)puwFile->Get("puw");
-    
-    /*TFile* kFactFile = new TFile("uncertainties_EWK_24bins.root");
+    TString prefix = "/t3/users/gellisim/lesyaFiles/"; 
+    TFile* kFactFile = new TFile("uncertainties_EWK_24bins.root");
     TH1F* kfactHist[3][3];
     kfactHist[0][0] = (TH1F*)kFactFile->Get("GJets_LO/inv_pt_G");
     kfactHist[1][0] = (TH1F*)kFactFile->Get("WJets_LO/inv_pt");
@@ -793,7 +798,7 @@ void readZgamma_reweight() {
         kfactHist[i][2] = (TH1F*)kfactHist[i][1]->Clone(Form("kfact%d",i));
         kfactHist[i][2]->Divide(kfactHist[i][1],kfactHist[i][0]);
         
-        //kfactHist[i][2]->Fit("func","","",200,1150);
+        //kfactHist[i][2]->Fit("func","","",200,1200);
         //kfactHist[i][2]->Fit("expo","","",200,1000);
         
         //kfactHist[i][2]->Write();
@@ -801,52 +806,40 @@ void readZgamma_reweight() {
     //kFactFile2->Close();
     //return;
     
-    TH1F* kfactHistLocal[nProcess];
-    for (int i=0; i!=nProcess; ++i) {
-        kfactHistLocal[i] = (TH1F*)kfactHist[0][2]->Clone(Form("kfact_%d",i));
-        kfactHistLocal[i]->Scale(0.);
-    }
-    */
+    TFile* newFile3 = new TFile("data_kfact3_4fb.root");
+    TH2F* kfactHistLocal3 = (TH2F*)newFile3->Get("distribs2d_11");
+    
     
     TH1D* _hCounter = new TH1D("hCounter", "Events counter", 5,0,5);
-    TString prefix= "/t3/users/gellisim/lesyaFiles/";
 
     TFile* hfile[nFiles];
     TTree* inputTreeFake[nFiles];
-    
-    TH1D* distribs[nProcess+2][nVars];
-    TH2D* distribs2d[nProcess+2];
-    for (int sam=0; sam!=nProcess+2; ++sam) {
-        distribs2d[sam] = new TH2D(Form("distribs2d_%d",sam),
-                                    ";"+vars[1]+";"+vars[2]+";",
-                                    nBinsVars[1], varDown[1], varUp[1],nBinsVars[2], varDown[2], varUp[2]
-                                    );
-        
-    }
+    int nCategories = 4;
+    TH1D* distribs[nCategories][nProcess+2][nVars];
 
-    for (int sam=0; sam!=nProcess+2; ++sam) for (int i=0; i!=nVars; ++i)  {
-        distribs[sam][i] = new TH1D(Form("distribs_%d_%d",sam,i),
+    for (int kat=0; kat!=nCategories; ++kat)  for (int sam=0; sam!=nProcess+2; ++sam) for (int i=0; i!=nVars; ++i)  {
+        distribs[kat][sam][i] = new TH1D(Form("distribs_%d_%d_%d",kat,sam,i),
                                        ";"+vars[i]+Form(";events / %1.1f",(varUp[i]-varDown[i])/nBinsVars[i])+varsBin[i],
                                        nBinsVars[i], varDown[i], varUp[i]
                                        );
-        distribs[sam][i]->Sumw2();
-        distribs[sam][i]->SetMarkerSize(0.8);
+        distribs[kat][sam][i]->Sumw2();
+        distribs[kat][sam][i]->SetMarkerSize(0.8);
         if (sam <= nFiles-2 && sam >= iSM)
-            distribs[sam][i]->SetFillColor(colsStack[sam]);
+            distribs[kat][sam][i]->SetFillColor(colsStack[sam]);
         if (sam < iSM)
-            distribs[sam][i]->SetLineColor(colsStack[sam]);
+            distribs[kat][sam][i]->SetLineColor(colsStack[sam]);
         else
-            distribs[sam][i]->SetLineColor(1);
+            distribs[kat][sam][i]->SetLineColor(1);
         //else
-        //    distribs[sam][i]->SetLineColor(colsStack[sam]);
-        distribs[sam][i]->GetXaxis()->SetNdivisions(nDivisions[i]);
+        //    distribs[kat][sam][i]->SetLineColor(colsStack[sam]);
+        distribs[kat][sam][i]->GetXaxis()->SetNdivisions(nDivisions[i]);
     }
     
-    THStack* distribsStack[nVars];
-    for (int i=0; i!=nVars; ++i) {
-        distribsStack[i] = new THStack(Form("distribsStack_%d",i),vars[i]);
+    THStack* distribsStack[3][nVars];
+    for (int kat=0; kat!=3; ++kat) for (int i=0; i!=nVars; ++i) {
+        distribsStack[kat][i] = new THStack(Form("distribsStack_%d_%d",kat,i),vars[i]);
         for (int sam=nProcess-2; sam!=iSM-1; --sam) {
-            distribsStack[i]->Add(distribs[sam][i]);
+            distribsStack[kat][i]->Add(distribs[kat][sam][i]);
         }
     }
     
@@ -858,27 +851,38 @@ void readZgamma_reweight() {
     TLorentzVector jP4b;
     
     double kFactor[3];
+
+    TString fileAnalysed = "";
     
-    for (int kSam=0; kSam<nFiles; ++kSam) {
+    for (int kSam=0; kSam<nFiles-1; ++kSam) {
     //for (int kSam=1; kSam<nFiles; ++kSam) {
-        
-        //if (kSam >=iSM && kSam < nFiles-1) continue;
-        
+        std::cout<<"kSam: "<<kSam<<" iSM: "<<iSM<<" nFiles: "<<nFiles<<std::endl;
         if (kSam == iSM+4 || kSam == iSM+5) continue;
-        
+
         if (kSam >=iSM) {
-            if (gSystem->AccessPathName(prefix+"loose/small3_"+fileList[kSam])) continue;
+            if (gSystem->AccessPathName(prefix+"loose/small3_"+fileList[kSam])) std::cout<<"Problem with file: loose/small3_"<<fileList[kSam]<<std::endl; continue;
+            std::cout<<"Reading file: loose/small3_"<<fileList[kSam]<<std::endl;
+            fileAnalysed = prefix+"loose/small3_"+fileList[kSam];
             hfile[kSam]=new TFile(prefix+"loose/small3_"+fileList[kSam],"READ");
         } else {
-            if (gSystem->AccessPathName(""+prefix+fileList[kSam])) continue;
+            std::cout<<"Trying to read file: "<<prefix+fileList[kSam]<<std::endl;
+            /////if (gSystem->AccessPathName(""+prefix+fileList[kSam])) std::cout<<"Problem with file: "<<fileList[kSam]<<std::endl; continue;
+            std::cout<<"Reading file: "<<fileList[kSam]<<std::endl;
+            fileAnalysed = prefix+fileList[kSam];
             hfile[kSam]=new TFile(""+prefix+fileList[kSam],"READ");
         }
         hfile[kSam]->cd("ntuplizer");
+        
+        std::cout<<"DEFINING THE TREE"<<std::endl;
+
         inputTreeFake[kSam] = static_cast<TTree*>(hfile[kSam]->Get("ntuplizer/tree"));
         
         //fChain->SetBranchStatus( "*"                        ,  0 );  // disable all branches
         //fChain->SetBranchStatus( "HLT_isFired"              ,  1 );  // activate select branches
 
+        std::cout<<"+++++++++++++++++++++++++"<<std::endl;
+        std::cout<<"    Defining branches    "<<std::endl;
+        std::cout<<"+++++++++++++++++++++++++"<<std::endl;
         
         inputTreeFake[kSam]->SetBranchAddress("genParticle_N", &genParticle_N, &b_genParticle_N);
         inputTreeFake[kSam]->SetBranchAddress("genParticle_pt", &genParticle_pt, &b_genParticle_pt);
@@ -1048,6 +1052,7 @@ void readZgamma_reweight() {
 
         
         std::cout<<std::endl;
+        std::cout<<"Analysing: "<<fileAnalysed<<std::endl;
         std::cout<<prefix+fileList[kSam]<<" with entries "<<nEntries<<"; scale "<<scale<<std::endl;
         
         for (long it=0; it!=nEntries; ++it) {
@@ -1059,23 +1064,21 @@ void readZgamma_reweight() {
             
             double _weight = 1;
             if (kSam < nFiles-1) {
-                int ntrue = 0;
+                /*int ntrue = 0;
                 for (unsigned int k=0; k != bX->size(); ++k) {
                     if( bX->at(k) == 0 ) { // in-time PU
                         ntrue = nPuVtxTrue -> at(k);
                     }
                 }
-                //_weight = scale*getTruePUwUp(ntrue)*genWeight;
-                double puwNum = puw->GetBinContent(puw->FindBin(ntrue));
-
+                _weight = scale*getTruePUwUp(ntrue)*genWeight;*/
+                
                 //_weight = scale*getPUwECO(PV_N);
-                _weight = scale*genWeight*puwNum;
+                _weight = scale*genWeight;
             }
 
             
             bool triggerFired = false;
             bool triggerFired2 = false;
-            bool triggerFired3 = false;
             for(map<string,bool>::iterator it = HLT_isFired->begin(); it != HLT_isFired->end(); ++it) {
                 if ((it->first).find("HLT_Photon165_HE10_v")!= string::npos) {
                     triggerFired |= (1==it->second);
@@ -1083,13 +1086,9 @@ void readZgamma_reweight() {
                 if ((it->first).find("HLT_Photon175_v")!= string::npos) {
                     triggerFired2 |= (1==it->second);
                 }
-                if ((it->first).find("HLT_PFHT800")!= string::npos) {
-                    triggerFired3 |= (1==it->second);
-                }
             }
             if (kSam == nFiles-1) {
-                if (!triggerFired && !triggerFired2 && !triggerFired3) continue;
-                //if (!triggerFired && !triggerFired2) continue;
+                if (!triggerFired && !triggerFired2) continue;
                 if (!passFilter_CSCHalo) continue;
                 if (!passFilter_GoodVtx) continue;
             }
@@ -1099,8 +1098,8 @@ void readZgamma_reweight() {
                 if (ph_pt->at(i) < 200.) continue;
                 if (!ph_passEleVeto->at(i)) continue;
                 if (fabs(ph_superCluster_eta->at(i)) > 1.4442 && fabs(ph_superCluster_eta->at(i)) < 1.566) continue;
-                if (fabs(ph_eta->at(i)) > 2.4) continue;
-                //if (fabs(ph_eta->at(i)) > 1.4442) continue;
+                //if (fabs(ph_eta->at(i)) > 2.4) continue;
+                if (fabs(ph_eta->at(i)) > 1.4442) continue;
                 //if (fabs(ph_superCluster_eta->at(i)) < 1.4442 && ph_mvaVal->at(i) < 0.374) continue;
                 //if (fabs(ph_superCluster_eta->at(i)) > 1.566 && ph_mvaVal->at(i) < 0.336) continue;
                 
@@ -1119,6 +1118,7 @@ void readZgamma_reweight() {
                 else if (ph_pt->at(i) > ph_pt->at(phInd)) phInd = i;
                 
             }
+            
             if (phInd < 0) continue;
             phP4.SetPtEtaPhiE(ph_pt->at(phInd),ph_eta->at(phInd),ph_phi->at(phInd),ph_e->at(phInd));
             
@@ -1151,24 +1151,34 @@ void readZgamma_reweight() {
             for (int i=0; i!=jetAK8_N; ++i) {
                 if (!jetAK8_IDTightLepVeto->at(i)) continue;
                 if (jetAK8_pt->at(i) < 200.) continue;
-                if (jetAK8_pruned_massCorr->at(i) < 30.) continue;
-                //if (jetAK8_pruned_massCorr->at(i) < 75.) continue;
-                //if (jetAK8_pruned_massCorr->at(i) > 105.) continue;
-                //if (fabs(jetAK8_eta->at(i)) > 2.0) continue;
-                if (fabs(jetAK8_eta->at(i)) > 2.4) continue;
+                if (jetAK8_pruned_massCorr->at(i) < 50.) continue;
+                if (jetAK8_pruned_massCorr->at(i) > 70. && jetAK8_pruned_massCorr->at(i) < 75.) continue;
+                if (jetAK8_pruned_massCorr->at(i) > 105.) continue;
+                if (fabs(jetAK8_eta->at(i)) > 2.0) continue;
+                //if (fabs(jetAK8_eta->at(i)) > 2.4) continue;
                 jP4.SetPtEtaPhiE(jetAK8_pt->at(i),jetAK8_eta->at(i),jetAK8_phi->at(i),jetAK8_e->at(i));
                 if (jP4.DeltaR(phP4) < 1.1) continue;
                 if (jInd < 0) jInd = i;
                 else if (jetAK8_pt->at(i) > jetAK8_pt->at(jInd)) jInd = i;
             }
             if (jInd < 0) continue;
+            
+            if (kSam >= iSM && kSam < iSM+4) {
+                double sf2d = kfactHistLocal3->GetBinContent(kfactHistLocal3->FindBin(TMath::Min(ph_pt->at(phInd),float(1099.)), TMath::Min(jetAK8_pt->at(jInd),float(1199.))));
+                if (sf2d > 0)
+                    _weight = _weight*sf2d;
+                
+                
+            }
+            
+            
             //jP4.SetPtEtaPhiM(jetAK8_pt->at(jInd),jetAK8_eta->at(jInd),jetAK8_phi->at(jInd),jetAK8_pruned_massCorr->at(jInd));
             jP4.SetPtEtaPhiM(jetAK8_pt->at(jInd),jetAK8_eta->at(jInd),jetAK8_phi->at(jInd),jetAK8_mass->at(jInd));
 
             xP4 = jP4+phP4;
             
             double massjg = xP4.M();
-            //if (massjg < 600) continue;
+            if (massjg < 600) continue;
             //if (massjg < 710 || massjg > 780) continue;
             //if (massjg < 1500) continue;
             
@@ -1178,7 +1188,7 @@ void readZgamma_reweight() {
             //jP4b.Boost(-(xP4.BoostVector()));
             double cosThetaStar = std::abs(phP4b.Pz()/phP4b.P());
             
-            //if (ph_pt->at(phInd)/massjg < 0.34) continue;
+            if (ph_pt->at(phInd)/massjg < 0.34) continue;
             
             //if (cosThetaStar > 0.6) continue;
 
@@ -1199,40 +1209,51 @@ void readZgamma_reweight() {
                 //minCsv = TMath::Min(subjetAK8_pruned_csv->at(jInd).at(0),subjetAK8_pruned_csv->at(jInd).at(1));
                 //maxCsv = TMath::Max(subjetAK8_pruned_csv->at(jInd).at(0),subjetAK8_pruned_csv->at(jInd).at(1));
             }
-            //if (minCsv > 0.605 && maxCsv > 0.89) continue;
+            
+            int kat=0;
+            /*if ((minCsv > 0.480 && maxCsv > 0.800)) {
+                kat = 2; //b-tagged
+            } else if (jetAK8_tau2->at(jInd)/jetAK8_tau1->at(jInd) < 0.4) {
+                kat = 1; //antitau21
+            } else {
+                kat = 0; //antibtag
+            }*/
+            if (jetAK8_pruned_massCorr->at(jInd) < 75) {
+                kat = 1; //SB
+            } else if ((minCsv > 0.480 && maxCsv > 0.800)) {
+                kat = 2; //b-tagged
+            } else {
+                kat = 0; //anti-b-tagged
+            }
+            
 
             
-            distribs[grouping[kSam]][0]->Fill(lheHT, _weight);
-            distribs[grouping[kSam]][1]->Fill(TMath::Min(ph_pt->at(phInd), varUp[1]-1), _weight);
-            
-            //kfactHistLocal[grouping[kSam]]->Fill(ph_pt->at(phInd), _weight);
-            distribs2d[grouping[kSam]]->Fill(ph_pt->at(phInd), jetAK8_pt->at(jInd),_weight);
-            
-            distribs[grouping[kSam]][2]->Fill(TMath::Min(jetAK8_pt->at(jInd), varUp[2]-1), _weight);
-            distribs[grouping[kSam]][3]->Fill(ph_eta->at(phInd), _weight);
-            distribs[grouping[kSam]][4]->Fill(jetAK8_eta->at(jInd), _weight);
-            distribs[grouping[kSam]][5]->Fill(PV_N, _weight);
-            distribs[grouping[kSam]][6]->Fill(TMath::Min(jetAK8_pruned_massCorr->at(jInd), varUp[6]-1), _weight);
-            distribs[grouping[kSam]][7]->Fill(jetAK8_tau2->at(jInd)/jetAK8_tau1->at(jInd), _weight);
-            distribs[grouping[kSam]][8]->Fill(jP4.DeltaR(phP4), _weight);
-            distribs[grouping[kSam]][9]->Fill(fabs(jetAK8_eta->at(jInd)-ph_eta->at(phInd)), _weight);
-            distribs[grouping[kSam]][10]->Fill((jP4+phP4).M(), _weight);
-            distribs[grouping[kSam]][11]->Fill(TMath::Min(MET_et->at(0), varUp[11]-1), _weight);
+            distribs[kat][grouping[kSam]][0]->Fill(lheHT, _weight);
+            distribs[kat][grouping[kSam]][1]->Fill(TMath::Min(ph_pt->at(phInd), varUp[1]-1), _weight);
+            distribs[kat][grouping[kSam]][2]->Fill(TMath::Min(jetAK8_pt->at(jInd), varUp[2]-1), _weight);
+            distribs[kat][grouping[kSam]][3]->Fill(ph_eta->at(phInd), _weight);
+            distribs[kat][grouping[kSam]][4]->Fill(jetAK8_eta->at(jInd), _weight);
+            distribs[kat][grouping[kSam]][5]->Fill(PV_N, _weight);
+            distribs[kat][grouping[kSam]][6]->Fill(TMath::Min(jetAK8_pruned_massCorr->at(jInd), varUp[6]-1), _weight);
+            distribs[kat][grouping[kSam]][7]->Fill(jetAK8_tau2->at(jInd)/jetAK8_tau1->at(jInd), _weight);
+            distribs[kat][grouping[kSam]][8]->Fill(jP4.DeltaR(phP4), _weight);
+            distribs[kat][grouping[kSam]][9]->Fill(fabs(jetAK8_eta->at(jInd)-ph_eta->at(phInd)), _weight);
+            distribs[kat][grouping[kSam]][10]->Fill((jP4+phP4).M(), _weight);
+            distribs[kat][grouping[kSam]][11]->Fill(TMath::Min(MET_et->at(0), varUp[11]-1), _weight);
             
             float mt = sqrt(2*ph_pt->at(phInd)*MET_et->at(0)*( 1 - (TMath::Cos(ph_phi->at(phInd) - MET_phi->at(0) )) ) );
-            distribs[grouping[kSam]][12]->Fill(TMath::Min(mt, varUp[12]-1), _weight);
+            distribs[kat][grouping[kSam]][12]->Fill(TMath::Min(mt, varUp[12]-1), _weight);
             
             //std::cout<<subjetAK8_pruned_N->at(jInd)<<std::endl;
-            distribs[grouping[kSam]][13]->Fill(minCsv, _weight);
-            distribs[grouping[kSam]][14]->Fill(maxCsv, _weight);
+            distribs[kat][grouping[kSam]][13]->Fill(minCsv, _weight);
+            distribs[kat][grouping[kSam]][14]->Fill(maxCsv, _weight);
             //std::cout<<std::endl;
-            distribs[grouping[kSam]][15]->Fill(cosThetaStar, _weight);
-            distribs[grouping[kSam]][16]->Fill(ph_pt->at(phInd)/massjg, _weight);
-            if (jetAK8_pruned_massCorr->at(jInd) > 70)
-                distribs[grouping[kSam]][17]->Fill(jetAK8_Hbbtag->at(jInd), _weight);
+            distribs[kat][grouping[kSam]][15]->Fill(cosThetaStar, _weight);
+            distribs[kat][grouping[kSam]][16]->Fill(ph_pt->at(phInd)/massjg, _weight);
+            distribs[kat][grouping[kSam]][17]->Fill(jetAK8_Hbbtag->at(jInd), _weight);
             
             //if (jetAK8_pruned_massCorr->at(jInd) > 75 && jetAK8_pruned_massCorr->at(jInd) < 105)
-            distribs[grouping[kSam]][18]->Fill(TMath::Min(jetAK8_mass->at(jInd), varUp[18]-1), _weight);
+            distribs[kat][grouping[kSam]][18]->Fill(TMath::Min(jetAK8_mass->at(jInd), varUp[18]-1), _weight);
             
             
             
@@ -1242,11 +1263,16 @@ void readZgamma_reweight() {
         }
     }
     
+    for (int kat = 0; kat!=3; ++kat ) for (int i=0; i!=nVars; ++i) {
+        for (int j=iSM; j!=nProcess-1; ++j) {
+            distribs[kat][nProcess-1][i]->Add(distribs[kat][j][i]);
+        }
+    }
+    
     gROOT->SetBatch(kTRUE);
 
     
-    kFactor[2] = kFactor[1]/kFactor[0];
-    //kFactor[2] = 1.;
+    kFactor[2] = 1;//kFactor[1]/kFactor[0];
     
     //draw the histograms
     TCanvas* c1[nVars];
@@ -1260,26 +1286,24 @@ void readZgamma_reweight() {
     unityG->SetLineColor(kGray+2);
     unityG->SetLineWidth(1);
     
-
-    
-    for (int i=0; i!=nVars; ++i) {
+    for (int i=0; i!=nVars; ++i) for (int kat=0; kat!=3; ++kat) {
         leg[i] = new TLegend(0.6,0.9,0.92,0.5,Form("SF=%3.2f",kFactor[2]),"NDC");
         leg[i]->SetTextFont(42);
         leg[i]->SetFillStyle(3001);
         leg[i]->SetBorderSize(0);
 
         for (int j = 0; j!=iSM; ++j) {
-            leg[i]->AddEntry(distribs[j][i],sampleString[j],"l");
+            leg[i]->AddEntry(distribs[kat][j][i],sampleString[j],"l");
         }
         for (int j = iSM; j!=nProcess-1; ++j) {
             if (j == iSM+4 || j == iSM+5) continue;
 
-            leg[i]->AddEntry(distribs[j][i],sampleString[j],"f");
-            distribs[j][i]->Scale(kFactor[2]);
-            distribs[nProcess][i]->Add(distribs[j][i]);
-            std::cout<<sampleString[j]<<" "<<distribs[j][i]->Integral()<<std::endl;
+            leg[i]->AddEntry(distribs[kat][j][i],sampleString[j],"f");
+            distribs[kat][j][i]->Scale(kFactor[2]);
+            distribs[kat][nProcess][i]->Add(distribs[kat][j][i]);
+            std::cout<<sampleString[j]<<" "<<distribs[kat][j][i]->Integral()<<std::endl;
         }
-        leg[i]->AddEntry(distribs[nProcess-1][i],sampleString[nProcess-1],"pel");
+        leg[i]->AddEntry(distribs[kat][nProcess-1][i],sampleString[nProcess-1],"pel");
 
         c1[i] = new TCanvas(Form("can_%d",i),"",600*(1.-xPad),600);
         c1[i]->cd();
@@ -1289,22 +1313,22 @@ void readZgamma_reweight() {
         pad[i][0]->SetBottomMargin(0.01);
         pad[i][0]->cd();
 
-        distribs[nProcess-1][i]->GetXaxis()->SetLabelColor(0);
+        distribs[kat][nProcess-1][i]->GetXaxis()->SetLabelColor(0);
         
-        distribs[nProcess-1][i]->Draw("pe");
-        //distribs[nProcess][i]->Draw("hist");
-        distribsStack[i]->Draw("hist same");
+        distribs[kat][nProcess-1][i]->Draw("pe");
+        //distribs[kat][nProcess][i]->Draw("hist");
+        distribsStack[kat][i]->Draw("hist same");
 
-        distribs[nProcess][i]->SetFillStyle(3005);
-        distribs[nProcess][i]->SetFillColor(kGray+2);
-        distribs[nProcess][i]->SetMarkerStyle(1);
-        distribs[nProcess][i]->Draw("e2same");
+        distribs[kat][nProcess][i]->SetFillStyle(3005);
+        distribs[kat][nProcess][i]->SetFillColor(kGray+2);
+        distribs[kat][nProcess][i]->SetMarkerStyle(1);
+        distribs[kat][nProcess][i]->Draw("e2same");
 
-        distribs[nProcess][i]->Draw("axis same");
-        distribs[nProcess-1][i]->Draw("pe same");
+        distribs[kat][nProcess][i]->Draw("axis same");
+        distribs[kat][nProcess-1][i]->Draw("pe same");
         
         for (int j = 0; j!=iSM; ++j) {
-            distribs[j][i]->Draw("hist same");
+            distribs[kat][j][i]->Draw("hist same");
         }
         
         leg[i]->Draw("same");
@@ -1321,43 +1345,50 @@ void readZgamma_reweight() {
         pad[i][1]->SetTopMargin(0.06);
         pad[i][1]->cd();
         
-        distribs[nProcess+1][i]->Divide(distribs[nProcess-1][i],distribs[nProcess][i]);
+        distribs[kat][nProcess+1][i]->Divide(distribs[kat][nProcess-1][i],distribs[kat][nProcess][i]);
         
-        distribs[nProcess+1][i]->SetMarkerColor(1);
-        distribs[nProcess+1][i]->SetLineColor(1);
-        distribs[nProcess+1][i]->GetYaxis()->SetRangeUser(0,2);
-        distribs[nProcess+1][i]->GetYaxis()->SetNdivisions(503);
-        distribs[nProcess+1][i]->GetYaxis()->SetTitle("data/MC");
-        distribs[nProcess+1][i]->GetYaxis()->SetTitleOffset(1.2/((1.-xPad)/xPad));
-        distribs[nProcess+1][i]->GetYaxis()->SetTitleSize((1.-xPad)/xPad*0.06);
-        distribs[nProcess+1][i]->GetXaxis()->SetTitleSize((1.-xPad)/xPad*0.06);
-        distribs[nProcess+1][i]->GetYaxis()->SetLabelSize((1.-xPad)/xPad*0.05);
-        distribs[nProcess+1][i]->GetXaxis()->SetLabelSize((1.-xPad)/xPad*0.05);
+        distribs[kat][nProcess+1][i]->SetMarkerColor(1);
+        distribs[kat][nProcess+1][i]->SetLineColor(1);
+        distribs[kat][nProcess+1][i]->GetYaxis()->SetRangeUser(0,2);
+        distribs[kat][nProcess+1][i]->GetYaxis()->SetNdivisions(503);
+        distribs[kat][nProcess+1][i]->GetYaxis()->SetTitle("data/MC");
+        distribs[kat][nProcess+1][i]->GetYaxis()->SetTitleOffset(1.2/((1.-xPad)/xPad));
+        distribs[kat][nProcess+1][i]->GetYaxis()->SetTitleSize((1.-xPad)/xPad*0.06);
+        distribs[kat][nProcess+1][i]->GetXaxis()->SetTitleSize((1.-xPad)/xPad*0.06);
+        distribs[kat][nProcess+1][i]->GetYaxis()->SetLabelSize((1.-xPad)/xPad*0.05);
+        distribs[kat][nProcess+1][i]->GetXaxis()->SetLabelSize((1.-xPad)/xPad*0.05);
         
-        distribs[nProcess+1][i]->Draw("pe");
+        distribs[kat][nProcess+1][i]->Draw("pe");
 
         
         unityG->Draw("same");
-        distribs[nProcess+1][i]->Draw("pe same");
+        distribs[kat][nProcess+1][i]->Draw("pe same");
 
 
     }
     
-    
-    TFile* output = new TFile("histos.root","recreate");
-    for (int i = 0; i!=nVars; ++i) {
-        c1[i]->Write();
-        distribs[nProcess-1][10]->SetName("distribs_18_10_0");
-        distribs[nProcess-1][10]->Write("distribs_18_10_0",TObject::kWriteDelete);
-        for (int j = 0; j!=nProcess; ++j) {
-            distribs[j][i]->Write();
+    int masses[iSM] = {765, 1300, 1900, 3250};
+    TString dirnames[3] = {"antibtag","antitau21","btag"};
+    for (int kat=0; kat!=3; ++kat) {
+        TFile* output = new TFile("fitfiles/"+dirnames[kat]+"/histos_bkg.root","recreate");
+        for (int i = 0; i!=nVars; ++i) {
+            c1[i]->Write();
+            //distribs[kat][nProcess-1][10]->Write();
+            distribs[kat][nProcess-1][10]->SetName("distribs_18_10_0");
+            distribs[kat][nProcess-1][10]->Write("distribs_18_10_0",TObject::kWriteDelete);
+            /*for (int j = 0; j!=nFiles; ++j) {
+             distribs[kat][j][i]->Write();
+             }*/
         }
+        
+        for (int i = 0; i!=iSM; ++i) {
+            TFile* output2 = new TFile(Form("fitfiles/"+dirnames[kat]+"/histos_signal-%d.root",masses[i]),"recreate");
+            distribs[kat][i][10]->SetName("distribs_5_10_0__x");
+            distribs[kat][i][10]->Write("distribs_5_10_0__x",TObject::kWriteDelete);
+        }
+        output->Close();
+        delete output;
     }
-    for (int j = 0; j!=nProcess; ++j) {
-        //kfactHistLocal[j]->Write();
-        distribs2d[j]->Write();
-    }
-    output->Close();
     std::cout<<"Done"<<std::endl;
     
 }

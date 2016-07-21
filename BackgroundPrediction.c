@@ -24,7 +24,7 @@
  */
 
 #include "CMS_lumi.C"
-#include "tdrstyle.C"
+//#include "tdrstyle.C"
 
 using namespace RooFit;
 int iPeriod = 4;    // 1=7TeV, 2=8TeV, 3=7+8TeV, 7=7+8+13TeV
@@ -47,12 +47,12 @@ Double_t ErfExp(Double_t x, Double_t c, Double_t offset, Double_t width){
     if(width<1e-2)width=1e-2;
     if (c==0)c=-1e-7;
     return TMath::Exp(c*x)*(1.+TMath::Erf((x-offset)/width))/2. ;
-}
+};
 
 double quad(double a, double b, double c=0, double d=0, double e=0, double f=0)
 {
     return pow(a*a+b*b+c*c+d*d+e*e+f*f, 0.5);
-}
+};
 
 std::string itoa(int i)
 {
@@ -60,7 +60,7 @@ std::string itoa(int i)
     sprintf(res, "%d", i);
     std::string ret(res);
     return ret;
-}
+};
 
 
 TCanvas* comparePlots2(RooPlot *plot_bC, RooPlot *plot_bS, TH1F *data, TH1F *qcd, std::string title)
@@ -142,7 +142,7 @@ TCanvas* comparePlots2(RooPlot *plot_bC, RooPlot *plot_bS, TH1F *data, TH1F *qcd
     // m_one_line->Draw("same");
     p_1->cd();
     return c;
-}
+};
 
 void BackgroundPrediction(std::string pname,int rebin_factor,int model_number = 0,int imass=750, bool plotBands = false)
 {
@@ -165,7 +165,7 @@ void BackgroundPrediction(std::string pname,int rebin_factor,int model_number = 
     
     writeExtraText = true;       // if extra text
     extraText  = "Preliminary";  // default extra text is "Preliminary"
-    lumi_13TeV  = "2.7 fb^{-1}"; // default is "19.7 fb^{-1}"
+    lumi_13TeV  = "7.7 fb^{-1}"; // default is "19.7 fb^{-1}"
     lumi_7TeV  = "4.9 fb^{-1}";  // default is "5.1 fb^{-1}"
     
     
@@ -541,7 +541,7 @@ void BackgroundPrediction(std::string pname,int rebin_factor,int model_number = 
         "env_pdf_0_13TeV_atlas1_coeff1","env_pdf_0_13TeV_atlas1_log1","",
         "env_pdf_0_13TeV_atlas2_coeff1","env_pdf_0_13TeV_atlas2_log1","env_pdf_0_13TeV_atlas2_log2",
         "env_pdf_0_13TeV_vvdijet1_coeff1","env_pdf_0_13TeV_vvdijet1_log1",""
-    }
+    };
     
     if(bias){
         //alternative model
@@ -619,7 +619,7 @@ void BackgroundPrediction(std::string pname,int rebin_factor,int model_number = 
     w_data->import(data_obs);
     w_data->SaveAs((dirName+"/w_data.root").c_str());
     
-}
+};
 
 
 

@@ -15,7 +15,7 @@
 #include "vector"
 #include "map"
 
-#include "tdrstyle.C"
+//#include "tdrstyle.C"
 #include "CMS_lumi.C"
 //#include "pu_weights.h"
 
@@ -196,11 +196,11 @@ void localRead3() {
     //distribs[iSM][2]->Draw("pe same");
     gStyle->SetOptStat(0);
     gStyle->SetPaintTextFormat("4.1f");
-     distribs2d[nProcess+2]->GetXaxis()->SetLabelSize(0.03);
-     distribs2d[nProcess+2]->GetXaxis()->SetTitleOffset(0.95);
-	distribs2d[nProcess+2]->GetYaxis()->SetTitleOffset(1.2);
-     distribs2d[nProcess+2]->GetXaxis()->SetTitleSize(0.04);
-     distribs2d[nProcess+2]->GetYaxis()->SetTitleSize(0.04);
+    distribs2d[nProcess+2]->GetXaxis()->SetLabelSize(0.03);
+    distribs2d[nProcess+2]->GetXaxis()->SetTitleOffset(0.95);
+    distribs2d[nProcess+2]->GetYaxis()->SetTitleOffset(1.2);
+    distribs2d[nProcess+2]->GetXaxis()->SetTitleSize(0.04);
+    distribs2d[nProcess+2]->GetYaxis()->SetTitleSize(0.04);
     distribs2d[nProcess+2]->GetYaxis()->SetLabelSize(0.03);
     distribs2d[nProcess+2]->GetXaxis()->SetRangeUser(200,1100);
     distribs2d[nProcess+2]->GetYaxis()->SetRangeUser(200,1200);
@@ -218,10 +218,12 @@ void localRead3() {
     distribs2d[nProcess+2]->GetYaxis()->SetRangeUser(200,1200);
     distribs2d[nProcess+2]->Write();
     newFile->Close();
-    
+
+    std::cout<<"Done"<<std::endl;   
+
     return;
     
-    std::cout<<"Done"<<std::endl;
+
     
 }
 
