@@ -298,7 +298,7 @@ int Display_SignalFits(std::string postfix,
         //double rangeHiLocal = 3500;//750
         
         plot_vg->SetTitle("");
-        plot_vg->GetYaxis()->SetRangeUser(0.01, 100);
+        plot_vg->GetYaxis()->SetRangeUser(0.01, 600);
         plot_vg->GetXaxis()->SetRangeUser(imass-400, imass+400);
         //plot_vg->GetXaxis()->SetRangeUser(rangeLoLocal, rangeHiLocal);
         plot_vg->GetXaxis()->SetLabelOffset(0.03);

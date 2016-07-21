@@ -24,6 +24,8 @@
  */
 
 #include "CMS_lumi.C"
+#include "RooMultiPdf.h"
+#include "RooMultiPdf.cxx"
 //#include "tdrstyle.C"
 
 using namespace RooFit;
@@ -146,12 +148,18 @@ TCanvas* comparePlots2(RooPlot *plot_bC, RooPlot *plot_bS, TH1F *data, TH1F *qcd
 
 void BackgroundPrediction(std::string pname,int rebin_factor,int model_number = 0,int imass=750, bool plotBands = false)
 {
+
+    //gSystem->Load("/cmshome/gellisim/CMSSW_8_0_11/src/Vg/RooMultiPdf_cxx.so");
+    //gSystem->Load("/cmshome/gellisim/CMSSW_8_0_11/src/Vg/RooMultiPdf_h.so");
+
     rebin = rebin_factor;
-    std::string fname = std::string("../fitFilesMETPT34/") + pname + std::string("/histos_bkg.root");
+    std::string fname = std::string("fitfiles/") + pname + std::string("/histos_bkg.root");
+    std::cout<<"fname: "<<fname.c_str()<<std::endl;
     
     stringstream iimass ;
     iimass << imass;
     std::string dirName = "info_"+iimass.str()+"_"+pname;
+    std::cout<<"dirName: "<<dirName.c_str()<<std::endl;
     
     
     gStyle->SetOptStat(000000000);
@@ -563,12 +571,12 @@ void BackgroundPrediction(std::string pname,int rebin_factor,int model_number = 
             std::cerr<<w_alt->var("x")<<std::endl;
             RooRealVar * range_ = w_alt->var("x");
             range_->setRange(SR_lo,SR_hi);
-            char* asd = ("alt_bg_"+blah).c_str()	;
+            std::string asd = ("alt_bg_"+blah).c_str()	;
             w_alt->import(nBackground2);
             std::cout<<alt_bg->getVal() <<std::endl;
-            w_alt->pdf(asd)->fitTo(pred, RooFit::Minimizer("Minuit2"), RooFit::Range(SR_lo, SR_hi), RooFit::SumW2Error(kTRUE), RooFit::Save());
+            w_alt->pdf(asd.c_str())->fitTo(pred, RooFit::Minimizer("Minuit2"), RooFit::Range(SR_lo, SR_hi), RooFit::SumW2Error(kTRUE), RooFit::Save());
 
-    	    RooArgSet* altVars = w_alt->pdf(asd)->getVariables();
+    	    RooArgSet* altVars = w_alt->pdf(asd.c_str())->getVariables();
             TIterator *it2 = altVars->createIterator();
             RooRealVar* varAlt = (RooRealVar*)it2->Next();
             while (varAlt) {
