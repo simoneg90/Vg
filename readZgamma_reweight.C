@@ -867,10 +867,16 @@ void readZgamma_reweight() {
         if (kSam == iSM+4 || kSam == iSM+5) continue;
         
         if (kSam >=iSM) {
-            if (gSystem->AccessPathName(prefix+"loose/small3_"+fileList[kSam])) continue;
+            if (gSystem->AccessPathName(prefix+"loose/small3_"+fileList[kSam])){
+              std::cout<<"Having problem with file: "<<prefix<<"loose/small3_"<<fileList[kSam]<<std::endl; 
+              continue;
+            }
             hfile[kSam]=new TFile(prefix+"loose/small3_"+fileList[kSam],"READ");
         } else {
-            if (gSystem->AccessPathName(""+prefix+fileList[kSam])) continue;
+            if (gSystem->AccessPathName(""+prefix+fileList[kSam])){ 
+              std::cout<<"Having problem with file: "<<prefix+fileList[kSam]<<std::endl; 
+              continue;
+            }
             hfile[kSam]=new TFile(""+prefix+fileList[kSam],"READ");
         }
         hfile[kSam]->cd("ntuplizer");

@@ -855,18 +855,24 @@ void readZgamma_fullSelMC() {
     TString fileAnalysed = "";
     
     for (int kSam=0; kSam<nFiles-1; ++kSam) {
-    //for (int kSam=1; kSam<nFiles; ++kSam) {
         std::cout<<"kSam: "<<kSam<<" iSM: "<<iSM<<" nFiles: "<<nFiles<<std::endl;
         if (kSam == iSM+4 || kSam == iSM+5) continue;
 
         if (kSam >=iSM) {
-            if (gSystem->AccessPathName(prefix+"loose/small3_"+fileList[kSam])) std::cout<<"Problem with file: loose/small3_"<<fileList[kSam]<<std::endl; continue;
+            std::cout<<"Trying to read file: "<<prefix<<"loose/small3_"<<fileList[kSam]<<std::endl;
+            if (gSystem->AccessPathName(prefix+"loose/small3_"+fileList[kSam])) {
+              std::cout<<"Problem with file: "<<prefix<<"loose/small3_"<<fileList[kSam]<<std::endl; 
+              continue;
+            }
             std::cout<<"Reading file: loose/small3_"<<fileList[kSam]<<std::endl;
             fileAnalysed = prefix+"loose/small3_"+fileList[kSam];
             hfile[kSam]=new TFile(prefix+"loose/small3_"+fileList[kSam],"READ");
         } else {
             std::cout<<"Trying to read file: "<<prefix+fileList[kSam]<<std::endl;
-            /////if (gSystem->AccessPathName(""+prefix+fileList[kSam])) std::cout<<"Problem with file: "<<fileList[kSam]<<std::endl; continue;
+            if (gSystem->AccessPathName(""+prefix+fileList[kSam])){
+              std::cout<<"Problem with file: "<<prefix+fileList[kSam]<<std::endl; 
+              continue;
+            }
             std::cout<<"Reading file: "<<fileList[kSam]<<std::endl;
             fileAnalysed = prefix+fileList[kSam];
             hfile[kSam]=new TFile(""+prefix+fileList[kSam],"READ");
@@ -1056,7 +1062,6 @@ void readZgamma_fullSelMC() {
         std::cout<<prefix+fileList[kSam]<<" with entries "<<nEntries<<"; scale "<<scale<<std::endl;
         
         for (long it=0; it!=nEntries; ++it) {
-        //for (long it=0; it!=10000; ++it) {
             inputTreeFake[kSam]->GetEntry(it);
             
             if (it%10000 == 0)
@@ -1117,7 +1122,7 @@ void readZgamma_fullSelMC() {
                 if (phInd < 0) phInd = i;
                 else if (ph_pt->at(i) > ph_pt->at(phInd)) phInd = i;
                 
-            }
+            }//end loop over # photons ph_N
             
             if (phInd < 0) continue;
             phP4.SetPtEtaPhiE(ph_pt->at(phInd),ph_eta->at(phInd),ph_phi->at(phInd),ph_e->at(phInd));
@@ -1145,7 +1150,7 @@ void readZgamma_fullSelMC() {
                     //_weight = _weight* kfactHist[0][2]->GetBinContent(kfactHist[0][2]->FindBin(genParticle_pt->at(phIndMC)));
                     //_weight = _weight*func->Eval(genParticle_pt->at(phIndMC));
                 }
-            }
+            }//end loop over iSM
             
             int jInd = -1;
             for (int i=0; i!=jetAK8_N; ++i) {
@@ -1165,9 +1170,7 @@ void readZgamma_fullSelMC() {
             
             if (kSam >= iSM && kSam < iSM+4) {
                 double sf2d = kfactHistLocal3->GetBinContent(kfactHistLocal3->FindBin(TMath::Min(ph_pt->at(phInd),float(1099.)), TMath::Min(jetAK8_pt->at(jInd),float(1199.))));
-                if (sf2d > 0)
-                    _weight = _weight*sf2d;
-                
+                if (sf2d > 0) _weight = _weight*sf2d;
                 
             }
             
@@ -1208,7 +1211,8 @@ void readZgamma_fullSelMC() {
                 }
                 //minCsv = TMath::Min(subjetAK8_pruned_csv->at(jInd).at(0),subjetAK8_pruned_csv->at(jInd).at(1));
                 //maxCsv = TMath::Max(subjetAK8_pruned_csv->at(jInd).at(0),subjetAK8_pruned_csv->at(jInd).at(1));
-            }
+
+            }//end if subjetAK8_pruned_N->at(jInd) >= 2
             
             int kat=0;
             /*if ((minCsv > 0.480 && maxCsv > 0.800)) {
@@ -1254,14 +1258,14 @@ void readZgamma_fullSelMC() {
             
             //if (jetAK8_pruned_massCorr->at(jInd) > 75 && jetAK8_pruned_massCorr->at(jInd) < 105)
             distribs[kat][grouping[kSam]][18]->Fill(TMath::Min(jetAK8_mass->at(jInd), varUp[18]-1), _weight);
+            //std::cout<<"Kat: "<<kat<<" grouping: "<<grouping[kSam]<<" Integral: "<<distribs[kat][grouping[kSam]][18]->Integral()<<std::endl;
             
             
-            
-            if (kSam >= iSM)
-                kFactor[int(kSam==nFiles-1)]+=_weight;
+            if (kSam >= iSM) kFactor[int(kSam==nFiles-1)]+=_weight;
 
-        }
-    }
+        }//end loop over entries
+
+    }//end loop over files 
     
     for (int kat = 0; kat!=3; ++kat ) for (int i=0; i!=nVars; ++i) {
         for (int j=iSM; j!=nProcess-1; ++j) {
@@ -1301,7 +1305,8 @@ void readZgamma_fullSelMC() {
             leg[i]->AddEntry(distribs[kat][j][i],sampleString[j],"f");
             distribs[kat][j][i]->Scale(kFactor[2]);
             distribs[kat][nProcess][i]->Add(distribs[kat][j][i]);
-            std::cout<<sampleString[j]<<" "<<distribs[kat][j][i]->Integral()<<std::endl;
+            std::cout<<"kat: "<<kat<<" nProcess: "<<nProcess<<" i: "<<i<<" j: "<<j<<std::endl;
+            std::cout<<sampleString[j]<<"  "<<distribs[kat][j][i]->Integral()<<std::endl;
         }
         leg[i]->AddEntry(distribs[kat][nProcess-1][i],sampleString[nProcess-1],"pel");
 
@@ -1365,7 +1370,7 @@ void readZgamma_fullSelMC() {
         distribs[kat][nProcess+1][i]->Draw("pe same");
 
 
-    }
+    }//end loop: for (int i=0; i!=nVars; ++i) for (int kat=0; kat!=3; ++kat)
     
     int masses[iSM] = {765, 1300, 1900, 3250};
     TString dirnames[3] = {"antibtag","antitau21","btag"};
@@ -1379,18 +1384,18 @@ void readZgamma_fullSelMC() {
             /*for (int j = 0; j!=nFiles; ++j) {
              distribs[kat][j][i]->Write();
              }*/
-        }
+        }//end loop over nVars
         
         for (int i = 0; i!=iSM; ++i) {
             TFile* output2 = new TFile(Form("fitfiles/"+dirnames[kat]+"/histos_signal-%d.root",masses[i]),"recreate");
             distribs[kat][i][10]->SetName("distribs_5_10_0__x");
             distribs[kat][i][10]->Write("distribs_5_10_0__x",TObject::kWriteDelete);
-        }
+        }//end loop over iSM
         output->Close();
         delete output;
-    }
+    }//end loop for kat!=3
     std::cout<<"Done"<<std::endl;
     
-}
+}//end program
 
 
