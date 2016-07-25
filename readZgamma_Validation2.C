@@ -660,7 +660,7 @@ void readZgamma_Validation2() {
     // Set branch addresses and branch pointers
     int cont =0;
     
-    const int nFiles = 20;  //from 22, problems with 2 files...
+    const int nFiles = 22;  //from 22, problems with 2 files...
     const int nProcess = 12;
     const int iSM = 4;
     
@@ -719,8 +719,8 @@ void readZgamma_Validation2() {
         "signal-W_0-p-014-3250.root", //3
         "GJets_HT-100To200.root", //4
         "GJets_HT-200To400.root", //5
-     //   "GJets_HT-400To600.root", //6
-     //   "GJets_HT-600ToInf.root", //7
+        "GJets_HT-400To600.root", //6
+        "GJets_HT-600ToInf.root", //7
         "QCD_HT100to200.root", //8
         "QCD_HT200to300.root", //9
         "QCD_HT300to500.root", //10
@@ -734,7 +734,7 @@ void readZgamma_Validation2() {
         "Wljets.root", //18
         "ttjets.root", //19
         "ttgjets.root", //20
-        "data_77.root" //21
+        "data_13.root" //21
     };
     
     
@@ -745,8 +745,8 @@ void readZgamma_Validation2() {
         0.7,
         5000,
         1079,
-    //    125.9,
-    //    43.36,
+        125.9,
+        43.36,
         27990000,
         1712000,
         347700,
@@ -770,8 +770,8 @@ void readZgamma_Validation2() {
         3,
         4,
         4,
-    //    4,
-    //    4,
+        4,
+        4,
         5,
         5,
         5,
@@ -788,7 +788,7 @@ void readZgamma_Validation2() {
         11
     };
     
-    TFile* puwFile = new TFile("puw_2016_26fb.root");
+    TFile* puwFile = new TFile("puw_2016_13fb_200.root");
     TH1D* puw = (TH1D*)puwFile->Get("puw");
     
     /*TFile* kFactFile = new TFile("uncertainties_EWK_24bins.root");
@@ -884,10 +884,20 @@ void readZgamma_Validation2() {
         if (kSam == iSM+4 || kSam == iSM+5 ) continue;
         
         if (kSam >=iSM) {
-            if (gSystem->AccessPathName(prefix+"loose/small3_"+fileList[kSam])) continue;
+            std::cout<<"Trying to read: "<<prefix<<"loose/small3_"+fileList[kSam]<<std::endl;
+            if (gSystem->AccessPathName(prefix+"loose/small3_"+fileList[kSam])){
+              std::cout<<"Having problem with: "<<prefix<<"loose/small3_"+fileList[kSam]<<std::endl;
+              continue;
+            }
+            std::cout<<"Reading: "<<prefix<<"loose/small3_"+fileList[kSam]<<std::endl;
             hfile[kSam]=new TFile(prefix+"loose/small3_"+fileList[kSam],"READ");
         } else {
-            if (gSystem->AccessPathName(""+prefix+fileList[kSam])) continue;
+            std::cout<<"Trying to read: "<<prefix+fileList[kSam]<<std::endl;
+            if (gSystem->AccessPathName(""+prefix+fileList[kSam])){
+              std::cout<<"Having problem with: "<<prefix+fileList[kSam]<<std::endl;
+              continue;
+            }
+            std::cout<<"Reading: "<<prefix+fileList[kSam]<<std::endl;
             hfile[kSam]=new TFile(""+prefix+fileList[kSam],"READ");
         }
         hfile[kSam]->cd("ntuplizer");

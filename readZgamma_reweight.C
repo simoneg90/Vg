@@ -22,7 +22,7 @@
 
 
 
-const double intlumi = 7600;
+const double intlumi = 12900;
 int iPeriod = 4;    // 1=7TeV, 2=8TeV, 3=7+8TeV, 7=7+8+13TeV
 int iPos =0;
 
@@ -80,7 +80,7 @@ void readZgamma_reweight() {
     
     writeExtraText = true;       // if extra text
     extraText  = "Preliminary";  // default extra text is "Preliminary"
-    lumi_13TeV  = "7.6 fb^{-1} (2016)"; // default is "19.7 fb^{-1}"
+    lumi_13TeV  = "12.9 fb^{-1} (2016)"; // default is "19.7 fb^{-1}"
 
     
     // Fixed size dimensions of array or collections stored in the TTree if any.
@@ -653,7 +653,7 @@ void readZgamma_reweight() {
     PV_z = 0;
     // Set branch addresses and branch pointers
     
-    const int nFiles = 17;  //changed from 19 -> Problem reading GJets_400-600 & 600-Inf
+    const int nFiles = 19;  //changed from 19 -> Problem reading GJets_400-600 & 600-Inf
     const int nProcess = 9;
     const int iSM = 4;
     
@@ -707,8 +707,8 @@ void readZgamma_reweight() {
         "signal-W_0-p-014-3250.root", //3
         "GJets_HT-100To200.root", //4
         "GJets_HT-200To400.root", //5
-    //    "GJets_HT-400To600.root", //6
-    //    "GJets_HT-600ToInf.root", //7
+        "GJets_HT-400To600.root", //6
+        "GJets_HT-600ToInf.root", //7
         "QCD_HT100to200.root", //8
         "QCD_HT200to300.root", //9
         "QCD_HT300to500.root", //10
@@ -719,7 +719,7 @@ void readZgamma_reweight() {
         "QCD_HT2000toInf.root", //15
         "WJetsToQQ_HT180.root",//16
         "DYJetsToQQ_HT180.root",
-        "data_77.root"
+        "data_13.root"
     };
     
     
@@ -730,8 +730,8 @@ void readZgamma_reweight() {
         0.7,
         5000,
         1079,
-   //     125.9,
-   //     43.36,
+        125.9,
+        43.36,
         27990000,
         1712000,
         347700,
@@ -752,8 +752,8 @@ void readZgamma_reweight() {
         3,
         4,
         4,
-    //    4,
-    //    4,
+        4,
+        4,
         5,
         5,
         5,
@@ -767,7 +767,7 @@ void readZgamma_reweight() {
         8
     };
     
-    TFile* puwFile = new TFile("../puw_2016_26fb.root");//"puWeights_7fb.root");
+    TFile* puwFile = new TFile("puw_2016_13fb_200.root");//"puWeights_7fb.root");
     TH1D* puw = (TH1D*)puwFile->Get("puw");
     
     /*TFile* kFactFile = new TFile("uncertainties_EWK_24bins.root");
@@ -856,6 +856,8 @@ void readZgamma_reweight() {
     TLorentzVector xP4;
     TLorentzVector phP4b;
     TLorentzVector jP4b;
+
+    TString realFile = "";
     
     double kFactor[3];
     
@@ -871,12 +873,14 @@ void readZgamma_reweight() {
               std::cout<<"Having problem with file: "<<prefix<<"loose/small3_"<<fileList[kSam]<<std::endl; 
               continue;
             }
+            realFile=prefix+"loose/small3_"+fileList[kSam];
             hfile[kSam]=new TFile(prefix+"loose/small3_"+fileList[kSam],"READ");
         } else {
             if (gSystem->AccessPathName(""+prefix+fileList[kSam])){ 
               std::cout<<"Having problem with file: "<<prefix+fileList[kSam]<<std::endl; 
               continue;
             }
+            realFile=""+prefix+fileList[kSam];
             hfile[kSam]=new TFile(""+prefix+fileList[kSam],"READ");
         }
         hfile[kSam]->cd("ntuplizer");
@@ -1054,7 +1058,7 @@ void readZgamma_reweight() {
 
         
         std::cout<<std::endl;
-        std::cout<<prefix+fileList[kSam]<<" with entries "<<nEntries<<"; scale "<<scale<<std::endl;
+        std::cout<<realFile<<" with entries "<<nEntries<<"; scale "<<scale<<std::endl;
         
         for (long it=0; it!=nEntries; ++it) {
         //for (long it=0; it!=10000; ++it) {
@@ -1353,7 +1357,7 @@ void readZgamma_reweight() {
     TFile* output = new TFile("histos.root","recreate");
     for (int i = 0; i!=nVars; ++i) {
         c1[i]->Write();
-        distribs[nProcess-1][10]->SetName("distribs_18_10_0");
+        distribs[nProcess-1][10]->SetName("distribs_18_10_0");//this means data distribution of mPhoton+mAk08
         distribs[nProcess-1][10]->Write("distribs_18_10_0",TObject::kWriteDelete);
         for (int j = 0; j!=nProcess; ++j) {
             distribs[j][i]->Write();

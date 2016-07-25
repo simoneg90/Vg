@@ -79,7 +79,7 @@ void localRead3() {
     
     writeExtraText = true;       // if extra text
     extraText  = "Preliminary";  // default extra text is "Preliminary"
-    lumi_13TeV  = "7.6 fb^{-1} (2016)"; // default is "19.7 fb^{-1}"
+    lumi_13TeV  = "12.9 fb^{-1} (2016)"; // default is "19.7 fb^{-1}"
 
     const int nFiles = 19;
     const int nProcess = 9;
@@ -171,7 +171,7 @@ void localRead3() {
                                    );
         
         if (sam < nProcess) {
-            distribs2d[sam]->Read(Form("distribs2d_%d",sam));
+            distribs2d[sam]->Read(Form("distribs2d_%d",sam)); //Read contents of object with specified name from the current directory - aka histos.root
             std::cout<<"read "<<Form("distribs2d_%d",sam)<<std::endl;
             //if (sam >= iSM && sam < nProcess-1)
             //    distribs[sam][i]->Scale(1./1.3);
@@ -182,12 +182,12 @@ void localRead3() {
     std::cout<<"done"<<std::endl;
 
     for (int sam=iSM+1; sam!=nProcess-1; ++sam) {//sum of qcd, w, dy
-        distribs2d[nProcess]->Add(distribs2d[sam]);
+        distribs2d[nProcess]->Add(distribs2d[sam]); //adding all MC samples (only BKG as it starts from the first one. We have 4 signal samples (iSM) and the other are MC background. Beware that the last one is data! That's why nProcess-1)
 
     }
     distribs2d[nProcess+1]->Add(distribs2d[nProcess-1]); //add data
     distribs2d[nProcess+1]->Add(distribs2d[nProcess],-1.); //subtract MC
-    distribs2d[nProcess+2]->Divide(distribs2d[nProcess+1],distribs2d[iSM]); //subtract MC
+    distribs2d[nProcess+2]->Divide(distribs2d[nProcess+1],distribs2d[iSM]); //subtract MC ??? Only gamma+jets->it's the fourth component  ???
 
     gStyle->SetPaintTextFormat("4.1f");
     

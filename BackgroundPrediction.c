@@ -153,13 +153,14 @@ void BackgroundPrediction(std::string pname,int rebin_factor,int model_number = 
     //gSystem->Load("/cmshome/gellisim/CMSSW_8_0_11/src/Vg/RooMultiPdf_h.so");
 
     rebin = rebin_factor;
-    std::string fname = std::string("fitfiles/") + pname + std::string("/histos_bkg.root");
+    ////std::string fname = std::string("fitfiles/") + pname + std::string("/histos_bkg.root");
+    std::string fname = "histos.root";
     std::cout<<"fname: "<<fname.c_str()<<std::endl;
     
     stringstream iimass ;
     iimass << imass;
     std::string dirName = "info_"+iimass.str()+"_"+pname;
-    std::cout<<"dirName: "<<dirName.c_str()<<std::endl;
+    std::cout<<"Output dirName: "<<dirName.c_str()<<std::endl;
     
     
     gStyle->SetOptStat(000000000);
@@ -173,15 +174,18 @@ void BackgroundPrediction(std::string pname,int rebin_factor,int model_number = 
     
     writeExtraText = true;       // if extra text
     extraText  = "Preliminary";  // default extra text is "Preliminary"
-    lumi_13TeV  = "7.7 fb^{-1}"; // default is "19.7 fb^{-1}"
+    lumi_13TeV  = "12.9 fb^{-1}"; // default is "19.7 fb^{-1}"
     lumi_7TeV  = "4.9 fb^{-1}";  // default is "5.1 fb^{-1}"
     
     
     double ratio_tau=-1;
     
     TFile *f=new TFile(fname.c_str());
-    TH1F *h_mX_CR_tau=(TH1F*)f->Get("distribs_18_10_1")->Clone("CR_tau");
+    std::cout<<"Opened file: "<<fname.c_str()<<std::endl;
+    TH1F *h_mX_CR_tau=(TH1F*)f->Get("distribs_18_10_0")->Clone("CR_tau");//it was distribs_18_10_1
+    std::cout<<"Getting distribs_18_10_1 CR_tau"<<std::endl;
     TH1F *h_mX_SR=(TH1F*)f->Get("distribs_18_10_0")->Clone("The_SR");
+    std::cout<<"Getting distribs_18_10_0 TheSR"<<std::endl;
     double maxdata = h_mX_SR->GetMaximum();
     double nEventsSR = h_mX_SR->Integral(600,4000);
     ratio_tau=(h_mX_SR->GetSumOfWeights()/(h_mX_CR_tau->GetSumOfWeights()));
